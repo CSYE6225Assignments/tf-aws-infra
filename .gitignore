@@ -3,6 +3,8 @@
 *.tfstate.*
 .terraform/
 .terraform.lock.hcl
+*.tfplan
+*.plan
 crash.log
 crash.*.log
 override.tf
