@@ -21,8 +21,8 @@ output "internet_gateway_id" {
 output "availability_zones_info" {
   description = "Detailed AZ distribution information"
   value = {
-    region               = var.region
-    available_azs        = local.available_azs
+    region              = var.region
+    available_azs       = local.available_azs
     azs_in_use          = local.azs_to_use
     total_azs_available = length(local.available_azs)
     total_azs_used      = length(local.azs_to_use)

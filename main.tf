@@ -29,19 +29,19 @@ data "aws_availability_zones" "available" {
 locals {
   # Determine how many AZs to use
   available_azs = data.aws_availability_zones.available.names
-  azs_to_use = var.max_azs == 0 ? local.available_azs : slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
+  azs_to_use    = var.max_azs == 0 ? local.available_azs : slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
 
   # Calculate AZ assignment for each subnet using round-robin
-  public_subnet_azs = [for i in range(length(var.public_subnet_cidrs)) : local.azs_to_use[i % length(local.azs_to_use)]]
+  public_subnet_azs  = [for i in range(length(var.public_subnet_cidrs)) : local.azs_to_use[i % length(local.azs_to_use)]]
   private_subnet_azs = [for i in range(length(var.private_subnet_cidrs)) : local.azs_to_use[i % length(local.azs_to_use)]]
 
   # Create a map of AZ usage for better visibility
   az_distribution = {
-    total_azs_available = length(local.available_azs)
-    azs_being_used      = length(local.azs_to_use)
-    public_subnets      = length(var.public_subnet_cidrs)
-    private_subnets     = length(var.private_subnet_cidrs)
-    public_distribution = { for az in local.azs_to_use : az => length([for s_az in local.public_subnet_azs : s_az if s_az == az]) }
+    total_azs_available  = length(local.available_azs)
+    azs_being_used       = length(local.azs_to_use)
+    public_subnets       = length(var.public_subnet_cidrs)
+    private_subnets      = length(var.private_subnet_cidrs)
+    public_distribution  = { for az in local.azs_to_use : az => length([for s_az in local.public_subnet_azs : s_az if s_az == az]) }
     private_distribution = { for az in local.azs_to_use : az => length([for s_az in local.private_subnet_azs : s_az if s_az == az]) }
   }
 }
