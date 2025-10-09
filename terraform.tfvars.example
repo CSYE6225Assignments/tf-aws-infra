@@ -1,0 +1,26 @@
+# AWS Configuration
+region       = "us-east-1"
+profile      = "dev"
+
+# VPC Configuration
+vpc_name     = "csye6225-vpc-unique"
+project_name = "csye6225"
+environment  = "dev"
+vpc_cidr     = "10.0.0.0/16"
+
+# Public Subnets (3 required)
+public_subnet_cidrs = [
+  "10.0.1.0/24",
+  "10.0.2.0/24",
+  "10.0.3.0/24"
+]
+
+# Private Subnets (3 required)
+private_subnet_cidrs = [
+  "10.0.10.0/24",
+  "10.0.11.0/24",
+  "10.0.12.0/24"
+]
+
+# AZ Configuration
+max_azs = 3
