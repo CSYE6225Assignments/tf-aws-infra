@@ -1,64 +1,86 @@
 variable "region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
 }
 
 variable "profile" {
   description = "AWS CLI profile to use"
   type        = string
-  default     = "dev"
 }
 
 variable "vpc_name" {
-  description = "Name tag for VPC"
+  description = "Name tag for VPC and its resources (must be unique for each deployment)"
   type        = string
+
+  validation {
+    condition     = length(var.vpc_name) > 0
+    error_message = "VPC name cannot be empty."
+  }
+}
+
+variable "project_name" {
+  description = "Project name for tagging"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "environment" {
+  description = "Environment name (dev, demo, prod)"
+  type        = string
+
+  validation {
+    condition     = contains(["dev", "demo", "prod"], var.environment)
+    error_message = "Environment must be dev, demo, or prod."
+  }
 }
 
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
   type        = string
-  default     = "10.0.0.0/16"
-}
 
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
-
-variable "availability_zones" {
-  description = "List of availability zones (leave empty to auto-select)"
-  type        = list(string)
-  default     = []
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr, 0))
+    error_message = "Must be a valid IPv4 CIDR block."
+  }
 }
 
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets"
   type        = list(string)
-  default = [
-    "10.0.1.0/24",
-    "10.0.2.0/24",
-    "10.0.3.0/24"
-  ]
 
   validation {
-    condition     = length(var.public_subnet_cidrs) == 3
-    error_message = "Exactly 3 public subnet CIDRs are required."
+    condition     = length(var.public_subnet_cidrs) >= 1
+    error_message = "At least one public subnet CIDR is required."
+  }
+
+  validation {
+    condition     = alltrue([for cidr in var.public_subnet_cidrs : can(cidrhost(cidr, 0))])
+    error_message = "All public subnet CIDRs must be valid IPv4 CIDR blocks."
   }
 }
 
 variable "private_subnet_cidrs" {
   description = "CIDR blocks for private subnets"
   type        = list(string)
-  default = [
-    "10.0.10.0/24",
-    "10.0.11.0/24",
-    "10.0.12.0/24"
-  ]
 
   validation {
-    condition     = length(var.private_subnet_cidrs) == 3
-    error_message = "Exactly 3 private subnet CIDRs are required."
+    condition     = length(var.private_subnet_cidrs) >= 1
+    error_message = "At least one private subnet CIDR is required."
+  }
+
+  validation {
+    condition     = alltrue([for cidr in var.private_subnet_cidrs : can(cidrhost(cidr, 0))])
+    error_message = "All private subnet CIDRs must be valid IPv4 CIDR blocks."
+  }
+}
+
+variable "max_azs" {
+  description = "Maximum number of AZs to use (0 = use all available)"
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.max_azs >= 0
+    error_message = "max_azs must be 0 or positive."
   }
 }
