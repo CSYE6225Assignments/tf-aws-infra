@@ -84,3 +84,51 @@ variable "max_azs" {
     error_message = "max_azs must be 0 or positive."
   }
 }
+
+# EC2 Instance Variables
+variable "ami_id" {
+  description = "Custom AMI ID built by Packer"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+  validation {
+    condition     = contains(["t2.micro", "t2.small", "t3.micro", "t3.small"], var.instance_type)
+    error_message = "Instance type must be t2.micro, t2.small, t3.micro, or t3.small."
+  }
+}
+
+variable "key_name" {
+  description = "EC2 key pair name for SSH access (optional)"
+  type        = string
+  default     = null
+}
+
+variable "root_volume_size" {
+  description = "Root volume size in GB"
+  type        = number
+  default     = 25
+  validation {
+    condition     = var.root_volume_size >= 8 && var.root_volume_size <= 100
+    error_message = "Root volume size must be between 8 and 100 GB."
+  }
+}
+
+variable "root_volume_type" {
+  description = "Root volume type"
+  type        = string
+  default     = "gp2"
+  validation {
+    condition     = contains(["gp2", "gp3"], var.root_volume_type)
+    error_message = "Root volume type must be gp2 or gp3."
+  }
+}
+
+variable "app_port" {
+  description = "Application port"
+  type        = number
+  default     = 8080
+}

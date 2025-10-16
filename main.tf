@@ -150,3 +150,94 @@ resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private.id
 }
+
+# Application Security Group
+resource "aws_security_group" "application" {
+  name        = "${var.vpc_name}-application-sg"
+  description = "Security group for EC2 instances hosting web applications"
+  vpc_id      = aws_vpc.main.id
+
+ # SSH access
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTP access
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTPS access
+  ingress {
+    description = "HTTPS from anywhere"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Application port
+  ingress {
+    description = "Application port from anywhere"
+    from_port   = var.app_port
+    to_port     = var.app_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all outbound traffic
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.vpc_name}-application-sg"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# EC2 Instance
+resource "aws_instance" "application" {
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  subnet_id                   = aws_subnet.public[0].id
+  vpc_security_group_ids      = [aws_security_group.application.id]
+  associate_public_ip_address = true
+
+  # Root volume configuration
+  root_block_device {
+    volume_size           = var.root_volume_size
+    volume_type           = var.root_volume_type
+    delete_on_termination = true
+  }
+
+  # Disable termination protection
+  disable_api_termination = false
+
+  # Ensure network is ready before launching
+  depends_on = [
+    aws_internet_gateway.main,
+    aws_route_table_association.public
+  ]
+
+  tags = {
+    Name        = "${var.vpc_name}-application"
+    Environment = var.environment
+    Project     = var.project_name
+    Role        = "web-app"
+  }
+}
