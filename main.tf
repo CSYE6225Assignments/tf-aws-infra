@@ -157,7 +157,7 @@ resource "aws_security_group" "application" {
   description = "Security group for EC2 instances hosting web applications"
   vpc_id      = aws_vpc.main.id
 
- # SSH access
+  # SSH access
   ingress {
     description = "SSH from anywhere"
     from_port   = 22
