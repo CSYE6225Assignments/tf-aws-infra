@@ -78,3 +78,45 @@ output "environment" {
   description = "Environment name"
   value       = var.environment
 }
+
+# Application Security Group Outputs
+output "application_security_group_id" {
+  description = "ID of the application security group"
+  value       = aws_security_group.application.id
+}
+
+output "application_security_group_name" {
+  description = "Name of the application security group"
+  value       = aws_security_group.application.name
+}
+
+# EC2 Instance Outputs
+output "instance_id" {
+  description = "EC2 instance ID"
+  value       = aws_instance.application.id
+}
+
+output "instance_public_ip" {
+  description = "EC2 instance public IP address"
+  value       = aws_instance.application.public_ip
+}
+
+output "instance_public_dns" {
+  description = "EC2 instance public DNS name"
+  value       = aws_instance.application.public_dns
+}
+
+output "instance_private_ip" {
+  description = "EC2 instance private IP address"
+  value       = aws_instance.application.private_ip
+}
+
+output "application_url" {
+  description = "Application URL"
+  value       = "http://${aws_instance.application.public_ip}:${var.app_port}"
+}
+
+output "health_check_url" {
+  description = "Health check endpoint URL"
+  value       = "http://${aws_instance.application.public_ip}:${var.app_port}/healthz"
+}
