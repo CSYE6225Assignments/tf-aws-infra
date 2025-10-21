@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
   }
 }
 
@@ -14,6 +18,9 @@ provider "aws" {
   region  = var.region
   profile = var.profile
 }
+
+# Data source to get current region for outputs
+data "aws_region" "current" {}
 
 # Data source to get available AZs in the region
 data "aws_availability_zones" "available" {

@@ -120,3 +120,19 @@ output "health_check_url" {
   description = "Health check endpoint URL"
   value       = "http://${aws_instance.application.public_ip}:${var.app_port}/healthz"
 }
+
+# S3 Bucket Outputs
+output "s3_bucket_name" {
+  description = "Name of the S3 bucket for images"
+  value       = aws_s3_bucket.images.bucket
+}
+
+output "s3_bucket_arn" {
+  description = "ARN of the S3 bucket"
+  value       = aws_s3_bucket.images.arn
+}
+
+output "s3_bucket_region" {
+  description = "Region where the S3 bucket is created"
+  value       = data.aws_region.current.name
+}
