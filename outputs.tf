@@ -136,3 +136,14 @@ output "s3_bucket_region" {
   description = "Region where the S3 bucket is created"
   value       = data.aws_region.current.name
 }
+
+# Database Security Group Outputs
+output "database_security_group_id" {
+  description = "ID of the database security group"
+  value       = aws_security_group.database.id
+}
+
+output "database_security_group_name" {
+  description = "Name of the database security group"
+  value       = aws_security_group.database.name
+}
