@@ -56,22 +56,14 @@ resource "aws_security_group" "application" {
   }
 }
 
-# Database Security Group
+# Database Security Group (no inline ingress rules)
 resource "aws_security_group" "database" {
   name        = "${var.vpc_name}-database-sg"
   description = "Security group for RDS database instances"
   vpc_id      = aws_vpc.main.id
 
-  # Allow MySQL/MariaDB traffic from application security group only
-  ingress {
-    description     = "MySQL/MariaDB from application servers"
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    security_groups = [aws_security_group.application.id]
-  }
+  # No inline ingress - we use separate rule resources below
 
-  # Allow all outbound traffic (for updates and patches)
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -86,4 +78,15 @@ resource "aws_security_group" "database" {
     Project     = var.project_name
     Purpose     = "RDS database access"
   }
+}
+
+# Explicit ingress rule: Allow MySQL/MariaDB ONLY from application security group
+resource "aws_security_group_rule" "db_ingress_from_app" {
+  type                     = "ingress"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.database.id
+  source_security_group_id = aws_security_group.application.id
+  description              = "MySQL/MariaDB from application servers only"
 }
