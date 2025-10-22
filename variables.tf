@@ -132,3 +132,53 @@ variable "app_port" {
   type        = number
   default     = 8080
 }
+
+# RDS Configuration Variables
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+  validation {
+    condition     = contains(["db.t3.micro", "db.t4g.micro", "db.t2.micro"], var.db_instance_class)
+    error_message = "DB instance class must be db.t3.micro, db.t4g.micro, or db.t2.micro."
+  }
+}
+
+variable "db_allocated_storage" {
+  description = "Allocated storage in GB"
+  type        = number
+  default     = 20
+  validation {
+    condition     = var.db_allocated_storage >= 20 && var.db_allocated_storage <= 100
+    error_message = "Allocated storage must be between 20 and 100 GB."
+  }
+}
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_username" {
+  description = "Database master username"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_password" {
+  description = "Database master password"
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(var.db_password) >= 8
+    error_message = "Database password must be at least 8 characters."
+  }
+}
+
+variable "db_multi_az" {
+  description = "Enable Multi-AZ deployment"
+  type        = bool
+  default     = false
+}

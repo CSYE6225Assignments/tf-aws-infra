@@ -147,3 +147,42 @@ output "database_security_group_name" {
   description = "Name of the database security group"
   value       = aws_security_group.database.name
 }
+
+# RDS Outputs
+output "rds_endpoint" {
+  description = "RDS instance endpoint (hostname:port)"
+  value       = aws_db_instance.main.endpoint
+  sensitive   = true
+}
+
+output "rds_hostname" {
+  description = "RDS instance hostname"
+  value       = aws_db_instance.main.address
+  sensitive   = true
+}
+
+output "rds_port" {
+  description = "RDS instance port"
+  value       = aws_db_instance.main.port
+}
+
+output "rds_database_name" {
+  description = "RDS database name"
+  value       = aws_db_instance.main.db_name
+}
+
+output "rds_username" {
+  description = "RDS master username"
+  value       = var.db_username
+  sensitive   = true
+}
+
+output "db_subnet_group_name" {
+  description = "Name of the DB subnet group"
+  value       = aws_db_subnet_group.main.name
+}
+
+output "db_parameter_group_name" {
+  description = "Name of the DB parameter group"
+  value       = aws_db_parameter_group.main.name
+}
