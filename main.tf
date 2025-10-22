@@ -167,6 +167,9 @@ resource "aws_instance" "application" {
   vpc_security_group_ids      = [aws_security_group.application.id]
   associate_public_ip_address = true
 
+  # Attach IAM Instance Profile for S3 access
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+
   # User data script with RDS and S3 configuration
   user_data = templatefile("${path.module}/user-data.sh", {
     db_hostname    = aws_db_instance.main.address
@@ -187,12 +190,13 @@ resource "aws_instance" "application" {
 
   disable_api_termination = false
 
-  # Wait for RDS to be ready before launching EC2
+  # Wait for all dependencies
   depends_on = [
     aws_internet_gateway.main,
     aws_route_table_association.public,
     aws_db_instance.main,
-    aws_s3_bucket.images
+    aws_s3_bucket.images,
+    aws_iam_instance_profile.ec2_instance_profile
   ]
 
   tags = {

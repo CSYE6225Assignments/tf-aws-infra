@@ -5,17 +5,16 @@ set -e
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 echo "=== Starting User Data Script ==="
+date
 
-# Environment variables from Terraform
-export DB_HOST="${db_hostname}"
-export DB_PORT="${db_port}"
-export DB_NAME="${db_name}"
-export DB_USER="${db_username}"
-export DB_PASSWORD="${db_password}"
-export S3_BUCKET_NAME="${s3_bucket_name}"
-export AWS_REGION="${aws_region}"
+# Wait for network
+sleep 10
 
-# Create application.properties with RDS configuration
+# Install netcat for database connectivity check
+apt-get update -y
+apt-get install -y netcat-openbsd
+
+# Create application.properties with RDS and S3 configuration
 cat > /opt/csye6225/application.properties <<EOF
 # Server Configuration
 server.port=8080
@@ -52,20 +51,27 @@ EOF
 chown csye6225:csye6225 /opt/csye6225/application.properties
 chmod 640 /opt/csye6225/application.properties
 
-# Wait for RDS to be available (optional but recommended)
-echo "Waiting for database to be ready..."
+echo "=== Application properties created ==="
+
+# Wait for RDS to be ready
+echo "=== Waiting for database ==="
 for i in {1..30}; do
-  if mysqladmin ping -h "${db_hostname}" -u "${db_username}" -p"${db_password}" --silent 2>/dev/null; then
-    echo "Database is ready!"
+  if nc -z -w5 ${db_hostname} ${db_port} 2>/dev/null; then
+    echo "Database is reachable!"
     break
   fi
-  echo "Waiting for database... attempt $i/30"
+  echo "Attempt $i/30: Waiting..."
   sleep 10
 done
 
-# Restart application service
+# Start application
+echo "=== Starting application ==="
 systemctl daemon-reload
 systemctl enable csye6225.service
 systemctl restart csye6225.service
 
-echo "=== User Data Script Complete ==="
+sleep 5
+systemctl status csye6225.service --no-pager
+
+echo "=== User Data Complete ==="
+date

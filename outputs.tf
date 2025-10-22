@@ -186,3 +186,14 @@ output "db_parameter_group_name" {
   description = "Name of the DB parameter group"
   value       = aws_db_parameter_group.main.name
 }
+
+# IAM Outputs
+output "iam_role_name" {
+  description = "Name of the IAM role for EC2"
+  value       = aws_iam_role.ec2_instance_role.name
+}
+
+output "iam_instance_profile_name" {
+  description = "Name of the IAM instance profile"
+  value       = aws_iam_instance_profile.ec2_instance_profile.name
+}
