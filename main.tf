@@ -169,13 +169,13 @@ resource "aws_instance" "application" {
 
   # User data script with RDS and S3 configuration
   user_data = templatefile("${path.module}/user-data.sh", {
-    db_hostname   = aws_db_instance.main.address
-    db_port       = aws_db_instance.main.port
-    db_name       = aws_db_instance.main.db_name
-    db_username   = var.db_username
-    db_password   = var.db_password
+    db_hostname    = aws_db_instance.main.address
+    db_port        = aws_db_instance.main.port
+    db_name        = aws_db_instance.main.db_name
+    db_username    = var.db_username
+    db_password    = var.db_password
     s3_bucket_name = aws_s3_bucket.images.bucket
-    aws_region    = var.region
+    aws_region     = var.region
   })
 
   # Root volume configuration

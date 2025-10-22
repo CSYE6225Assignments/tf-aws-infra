@@ -45,12 +45,12 @@ resource "aws_db_instance" "main" {
   identifier = "csye6225"
 
   # Engine Configuration
-  engine               = "mysql"
-  engine_version       = "8.0.37"
-  instance_class       = var.db_instance_class
-  allocated_storage    = var.db_allocated_storage
-  storage_type         = "gp3"
-  storage_encrypted    = true
+  engine            = "mysql"
+  engine_version    = "8.0.37"
+  instance_class    = var.db_instance_class
+  allocated_storage = var.db_allocated_storage
+  storage_type      = "gp3"
+  storage_encrypted = true
 
   # Database Configuration
   db_name  = var.db_name
