@@ -136,17 +136,6 @@ variable "db_username" {
   default     = "csye6225"
 }
 
-variable "db_password" {
-  description = "Database master password"
-  type        = string
-  sensitive   = true
-
-  validation {
-    condition     = length(var.db_password) >= 8
-    error_message = "Database password must be at least 8 characters."
-  }
-}
-
 variable "db_multi_az" {
   description = "Enable Multi-AZ deployment"
   type        = bool
