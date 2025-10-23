@@ -32,24 +32,34 @@ data "aws_availability_zones" "available" {
   }
 }
 
-# Local values for AZ selection and subnet distribution
+# Local values for AZ selection and auto-generated subnets
 locals {
-  # Determine how many AZs to use
+  # AZ selection
   available_azs = data.aws_availability_zones.available.names
   azs_to_use    = var.max_azs == 0 ? local.available_azs : slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
+  az_count      = length(local.azs_to_use)
 
-  # Calculate AZ assignment for each subnet using round-robin
-  public_subnet_azs  = [for i in range(length(var.public_subnet_cidrs)) : local.azs_to_use[i % length(local.azs_to_use)]]
-  private_subnet_azs = [for i in range(length(var.private_subnet_cidrs)) : local.azs_to_use[i % length(local.azs_to_use)]]
+  # We’ll make one public and one private subnet per AZ
+  public_subnet_count  = local.az_count
+  private_subnet_count = local.az_count
 
-  # Create a map of AZ usage for better visibility
+  # Auto-generate /24 subnets from the VPC CIDR (assumes VPC like /16; adjust “8” if your VPC mask differs)
+  # First N /24s for public, next N /24s for private
+  public_subnet_cidrs_auto  = [for i in range(local.public_subnet_count) : cidrsubnet(var.vpc_cidr, 8, i)]
+  private_subnet_cidrs_auto = [for i in range(local.private_subnet_count) : cidrsubnet(var.vpc_cidr, 8, i + local.public_subnet_count)]
+
+  # Round-robin AZ assignment based on counts above
+  public_subnet_azs  = [for i in range(local.public_subnet_count) : local.azs_to_use[i % local.az_count]]
+  private_subnet_azs = [for i in range(local.private_subnet_count) : local.azs_to_use[i % local.az_count]]
+
+  # Distribution info (for outputs/debug)
   az_distribution = {
     total_azs_available  = length(local.available_azs)
-    azs_being_used       = length(local.azs_to_use)
-    public_subnets       = length(var.public_subnet_cidrs)
-    private_subnets      = length(var.private_subnet_cidrs)
-    public_distribution  = { for az in local.azs_to_use : az => length([for s_az in local.public_subnet_azs : s_az if s_az == az]) }
-    private_distribution = { for az in local.azs_to_use : az => length([for s_az in local.private_subnet_azs : s_az if s_az == az]) }
+    azs_being_used       = local.az_count
+    public_subnets       = local.public_subnet_count
+    private_subnets      = local.private_subnet_count
+    public_distribution  = { for az in local.azs_to_use : az => length([for az2 in local.public_subnet_azs : az2 if az2 == az]) }
+    private_distribution = { for az in local.azs_to_use : az => length([for az2 in local.private_subnet_azs : az2 if az2 == az]) }
   }
 }
 
@@ -79,9 +89,9 @@ resource "aws_internet_gateway" "main" {
 
 # Create Public Subnets (distributed across AZs in round-robin fashion)
 resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
+  count                   = local.public_subnet_count
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
+  cidr_block              = local.public_subnet_cidrs_auto[count.index]
   availability_zone       = local.public_subnet_azs[count.index]
   map_public_ip_on_launch = true
 
@@ -97,9 +107,9 @@ resource "aws_subnet" "public" {
 
 # Create Private Subnets (distributed across AZs in round-robin fashion)
 resource "aws_subnet" "private" {
-  count                   = length(var.private_subnet_cidrs)
+  count                   = local.private_subnet_count
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.private_subnet_cidrs[count.index]
+  cidr_block              = local.private_subnet_cidrs_auto[count.index]
   availability_zone       = local.private_subnet_azs[count.index]
   map_public_ip_on_launch = false
 
