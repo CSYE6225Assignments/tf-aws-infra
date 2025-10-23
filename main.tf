@@ -186,7 +186,7 @@ resource "aws_instance" "application" {
     db_port        = aws_db_instance.main.port
     db_name        = aws_db_instance.main.db_name
     db_username    = var.db_username
-    db_password    = var.db_password
+    db_password    = random_password.db_password.result
     s3_bucket_name = aws_s3_bucket.images.bucket
     aws_region     = var.region
   })

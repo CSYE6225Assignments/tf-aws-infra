@@ -1,3 +1,11 @@
+# Generate random password for RDS
+resource "random_password" "db_password" {
+  length  = 16
+  special = true
+  # Exclude characters that can cause issues in shell/JDBC
+  override_special = "!@-_"
+}
+
 # RDS Subnet Group - Use private subnets only
 resource "aws_db_subnet_group" "main" {
   name       = "${var.vpc_name}-db-subnet-group"
@@ -55,7 +63,7 @@ resource "aws_db_instance" "main" {
   # Database Configuration
   db_name  = var.db_name
   username = var.db_username
-  password = var.db_password
+  password = random_password.db_password.result
 
   # Network Configuration
   db_subnet_group_name   = aws_db_subnet_group.main.name
