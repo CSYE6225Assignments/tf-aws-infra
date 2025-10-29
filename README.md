@@ -1035,3 +1035,169 @@ echo "=== Done ==="
 
 ---
 
+## CloudWatch Observability Integration
+
+### Overview
+Infrastructure is configured to support comprehensive application observability using AWS CloudWatch for logging and metrics.
+
+### CloudWatch Resources
+
+**Log Groups:**
+- `/csye6225/{environment}/application` - Application logs
+- Retention: 7 days
+- Created automatically by Terraform
+
+**Metrics Namespace:**
+- `CSYE6225` - Custom application metrics
+
+### IAM Permissions
+
+**EC2 Instance Role Policies:**
+
+1. **S3 Access Policy** - Image upload/download
+  - `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject`, `s3:ListBucket`
+
+2. **CloudWatch Policy** - Logging and metrics
+  - `cloudwatch:PutMetricData` (restricted to CSYE6225 namespace)
+  - `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+  - `logs:DescribeLogGroups`, `logs:DescribeLogStreams`
+  - `ec2:DescribeVolumes`, `ec2:DescribeTags`
+  - `ssm:GetParameter` (for CloudWatch Agent configs)
+
+### User-Data Script
+
+**Responsibilities:**
+1. Configure CloudWatch Agent with environment-specific settings
+2. Replace `${ENVIRONMENT}` placeholder in agent configuration
+3. Start CloudWatch Agent service
+4. Create application.properties with RDS and S3 configuration
+5. Wait for RDS database availability
+6. Start application service
+
+**Key Operations:**
+```bash
+# Environment substitution
+sed -i 's/${ENVIRONMENT}/${environment}/g' /opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json
+
+# Start CloudWatch Agent
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json
+
+# Enable auto-start on reboot
+systemctl enable amazon-cloudwatch-agent
+```
+
+### Deployment
+
+**Prerequisites:**
+- Custom AMI with CloudWatch Agent installed
+- Application JAR packaged with logging/metrics instrumentation
+
+**Deploy Infrastructure:**
+```bash
+# Validate configuration
+terraform validate
+
+# Review changes
+terraform plan -var-file="dev.tfvars"
+
+# Apply infrastructure
+terraform apply -var-file="dev.tfvars"
+```
+
+**Update AMI:**
+```bash
+# After building new AMI, update dev.tfvars
+ami_id = "ami-XXXXXXXXXXX"
+
+# Recreate EC2 instance with new AMI
+terraform taint aws_instance.application
+terraform apply -var-file="dev.tfvars"
+```
+
+### Verification
+
+**Check CloudWatch Logs:**
+```bash
+# List log streams
+aws logs describe-log-streams \
+  --log-group-name "/csye6225/dev/application" \
+  --region us-east-1
+
+# Tail logs in real-time
+aws logs tail "/csye6225/dev/application" --follow
+```
+
+**Check CloudWatch Metrics:**
+```bash
+# List all metrics in namespace
+aws cloudwatch list-metrics --namespace "CSYE6225"
+
+# Get metric statistics
+aws cloudwatch get-metric-statistics \
+  --namespace "CSYE6225" \
+  --metric-name "api_user_create" \
+  --start-time $(date -u -v-10M +%Y-%m-%dT%H:%M:%S) \
+  --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+  --period 60 \
+  --statistics Sum
+```
+
+**Check Instance Status:**
+```bash
+# SSH to instance
+ssh -i ~/.ssh/csye6225-aws-key.pem ubuntu@<instance-ip>
+
+# Verify CloudWatch Agent running
+sudo systemctl status amazon-cloudwatch-agent
+
+# Check agent logs
+sudo tail -50 /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log
+
+# Check application logs
+sudo tail -50 /var/log/csye6225/app.log
+```
+
+### Resources Created
+
+- VPC with public/private subnets across multiple AZs
+- Internet Gateway and route tables
+- Security groups (application, database)
+- RDS MySQL instance (private subnets)
+- S3 bucket (encrypted, versioned, lifecycle policies)
+- IAM role and policies (S3 + CloudWatch permissions)
+- CloudWatch Log Group
+- EC2 instance with IAM instance profile
+
+### Outputs
+
+After deployment, retrieve key information:
+```bash
+terraform output instance_public_ip
+terraform output application_url
+terraform output s3_bucket_name
+terraform output cloudwatch_log_group_name
+terraform output rds_endpoint
+```
+
+### Environment Variables
+
+**Required in user-data template:**
+- `environment` - Environment name (dev/demo/prod)
+- `db_hostname` - RDS endpoint
+- `db_port` - RDS port (3306)
+- `db_name` - Database name
+- `db_username` - Database username
+- `db_password` - Database password (randomly generated)
+- `s3_bucket_name` - S3 bucket for images
+- `aws_region` - AWS region
+
+### Cleanup
+
+**Destroy all resources:**
+```bash
+terraform destroy -var-file="dev.tfvars"
+```
+
+**Note:** This deletes all data including uploaded images and database records.
