@@ -197,3 +197,14 @@ output "iam_instance_profile_name" {
   description = "Name of the IAM instance profile"
   value       = aws_iam_instance_profile.ec2_instance_profile.name
 }
+
+# CloudWatch Outputs
+output "cloudwatch_log_group_name" {
+  description = "Name of the CloudWatch log group"
+  value       = aws_cloudwatch_log_group.application.name
+}
+
+output "cloudwatch_log_group_arn" {
+  description = "ARN of the CloudWatch log group"
+  value       = aws_cloudwatch_log_group.application.arn
+}
