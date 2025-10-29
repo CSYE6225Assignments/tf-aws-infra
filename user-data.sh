@@ -101,10 +101,10 @@ management.endpoints.web.exposure.include=
 management.endpoints.jmx.exposure.include=
 
 # Metrics Configuration (StatsD Export)
-management.metrics.export.statsd.enabled=true
-management.metrics.export.statsd.flavor=etsy
-management.metrics.export.statsd.host=localhost
-management.metrics.export.statsd.port=8125
+management.statsd.metrics.export.enabled=true
+management.statsd.metrics.export.flavor=etsy
+management.statsd.metrics.export.host=localhost
+management.statsd.metrics.export.port=8125
 management.metrics.distribution.percentiles-histogram.all=false
 
 # Environment
@@ -129,6 +129,7 @@ for i in {1..30}; do
   echo "Attempt $i/30: Waiting for database..."
   sleep 10
 done
+
 
 # ========================================
 # Start Application
