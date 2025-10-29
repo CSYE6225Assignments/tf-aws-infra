@@ -49,9 +49,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "images" {
 # Lifecycle: STANDARD -> STANDARD_IA after 30 days
 resource "aws_s3_bucket_lifecycle_configuration" "images" {
   bucket = aws_s3_bucket.images.id
+
   rule {
     id     = "transition-to-standard-ia-30-days"
     status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
     transition {
       days          = 30
       storage_class = "STANDARD_IA"

@@ -2,8 +2,8 @@
 resource "random_password" "db_password" {
   length  = 16
   special = true
-  # Exclude characters that can cause issues in shell/JDBC
-  override_special = "!@-_"
+  # Exclude characters not allowed by RDS: /, @, ", and space
+  override_special = "!#$%&*()-_=+[]{}|:;<>,.?"
 }
 
 # RDS Subnet Group - Use private subnets only
