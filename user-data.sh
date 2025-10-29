@@ -50,9 +50,9 @@ AGENT_STATUS=$(/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl 
 echo "CloudWatch Agent status: $AGENT_STATUS"
 
 if [ "$AGENT_STATUS" = "running" ]; then
-    echo "✓ CloudWatch Agent started successfully"
+    echo " CloudWatch Agent started successfully"
 else
-    echo "✗ CloudWatch Agent failed to start"
+    echo " CloudWatch Agent failed to start"
     tail -20 /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log || true
 fi
 
@@ -115,7 +115,7 @@ EOF
 chown csye6225:csye6225 /opt/csye6225/application.properties
 chmod 640 /opt/csye6225/application.properties
 
-echo "✓ Application properties created"
+echo " Application properties created"
 
 # ========================================
 # Wait for Database
@@ -123,7 +123,7 @@ echo "✓ Application properties created"
 echo "=== Waiting for database ==="
 for i in {1..30}; do
   if nc -z -w5 ${db_hostname} ${db_port} 2>/dev/null; then
-    echo "✓ Database is reachable!"
+    echo " Database is reachable!"
     break
   fi
   echo "Attempt $i/30: Waiting for database..."
@@ -146,9 +146,9 @@ systemctl status csye6225.service --no-pager || true
 
 # Check if application is listening on port 8080
 if ss -ltn | grep -q ":8080 "; then
-    echo "✓ Application is listening on port 8080"
+    echo " Application is listening on port 8080"
 else
-    echo "⚠ Application may not be listening on port 8080"
+    echo " Application may not be listening on port 8080"
 fi
 
 echo "=== User Data Complete ==="
