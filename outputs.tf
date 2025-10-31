@@ -219,3 +219,24 @@ output "load_balancer_security_group_name" {
   description = "Name of the load balancer security group"
   value       = aws_security_group.load_balancer.name
 }
+
+# LAUNCH TEMPLATE OUTPUTS
+output "launch_template_id" {
+  description = "ID of the launch template"
+  value       = aws_launch_template.application.id
+}
+
+output "launch_template_name" {
+  description = "Name of the launch template"
+  value       = aws_launch_template.application.name
+}
+
+output "launch_template_latest_version" {
+  description = "Latest version of the launch template"
+  value       = aws_launch_template.application.latest_version
+}
+
+output "launch_template_default_version" {
+  description = "Default version of the launch template"
+  value       = aws_launch_template.application.default_version
+}
