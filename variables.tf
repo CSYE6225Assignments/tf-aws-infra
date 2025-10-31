@@ -141,3 +141,15 @@ variable "db_multi_az" {
   type        = bool
   default     = false
 }
+
+# Security Configuration
+variable "ssh_cidr" {
+  description = "CIDR block allowed to SSH into EC2 instances (restrict to your IP for security)"
+  type        = string
+  default     = "0.0.0.0/0"
+
+  validation {
+    condition     = can(cidrhost(var.ssh_cidr, 0))
+    error_message = "Must be a valid IPv4 CIDR block (e.g., 203.0.113.0/32 for single IP)."
+  }
+}
