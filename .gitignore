@@ -44,3 +44,8 @@ Thumbs.db
 *.backup
 *.bak
 *.tmp
+
+# Terraform generated files
+*.tfstate.backup
+*.log
+output.txt
