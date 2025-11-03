@@ -281,3 +281,34 @@ output "asg_desired_capacity" {
   description = "ASG desired capacity"
   value       = aws_autoscaling_group.application.desired_capacity
 }
+
+# AUTO SCALING POLICY OUTPUTS
+output "scale_up_policy_name" {
+  description = "Name of the scale up policy"
+  value       = aws_autoscaling_policy.scale_up.name
+}
+
+output "scale_up_policy_arn" {
+  description = "ARN of the scale up policy"
+  value       = aws_autoscaling_policy.scale_up.arn
+}
+
+output "scale_down_policy_name" {
+  description = "Name of the scale down policy"
+  value       = aws_autoscaling_policy.scale_down.name
+}
+
+output "scale_down_policy_arn" {
+  description = "ARN of the scale down policy"
+  value       = aws_autoscaling_policy.scale_down.arn
+}
+
+output "cpu_high_alarm_name" {
+  description = "Name of the CPU high alarm"
+  value       = aws_cloudwatch_metric_alarm.cpu_high.alarm_name
+}
+
+output "cpu_low_alarm_name" {
+  description = "Name of the CPU low alarm"
+  value       = aws_cloudwatch_metric_alarm.cpu_low.alarm_name
+}
