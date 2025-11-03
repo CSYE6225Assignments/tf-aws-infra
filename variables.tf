@@ -153,3 +153,49 @@ variable "ssh_cidr" {
     error_message = "Must be a valid IPv4 CIDR block (e.g., 203.0.113.0/32 for single IP)."
   }
 }
+
+# Auto Scaling Group Configuration
+variable "asg_min_size" {
+  description = "Minimum number of instances in Auto Scaling Group"
+  type        = number
+  default     = 3
+
+  validation {
+    condition     = var.asg_min_size >= 1 && var.asg_min_size <= 10
+    error_message = "ASG min size must be between 1 and 10."
+  }
+}
+
+variable "asg_max_size" {
+  description = "Maximum number of instances in Auto Scaling Group"
+  type        = number
+  default     = 5
+
+  validation {
+    condition     = var.asg_max_size >= 1 && var.asg_max_size <= 10
+    error_message = "ASG max size must be between 1 and 10."
+  }
+}
+
+variable "asg_desired_capacity" {
+  description = "Desired number of instances in Auto Scaling Group"
+  type        = number
+  default     = 3
+
+  validation {
+    condition     = var.asg_desired_capacity >= 1
+    error_message = "ASG desired capacity must be at least 1."
+  }
+}
+
+variable "asg_health_check_grace_period" {
+  description = "Time (in seconds) after instance comes into service before checking health"
+  type        = number
+  default     = 300
+}
+
+variable "asg_default_cooldown" {
+  description = "Amount of time (in seconds) after a scaling activity completes before another can begin"
+  type        = number
+  default     = 60
+}

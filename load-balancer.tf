@@ -101,13 +101,13 @@ resource "aws_lb_listener" "http" {
 # ==============================================================================
 # This allows us to test the Load Balancer before ASG is created
 
-resource "aws_lb_target_group_attachment" "standalone_instance" {
-  target_group_arn = aws_lb_target_group.application.arn
-  target_id        = aws_instance.application.id
-  port             = var.app_port
-
-  # Lifecycle to prevent errors during when we remove standalone EC2
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+# resource "aws_lb_target_group_attachment" "standalone_instance" {
+#   target_group_arn = aws_lb_target_group.application.arn
+#   target_id        = aws_instance.application.id
+#   port             = var.app_port
+#
+#   # Lifecycle to prevent errors during when we remove standalone EC2
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
