@@ -168,53 +168,53 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# EC2 Instance
-resource "aws_instance" "application" {
-  ami                         = var.ami_id
-  instance_type               = var.instance_type
-  key_name                    = var.key_name
-  subnet_id                   = aws_subnet.public[0].id
-  vpc_security_group_ids      = [aws_security_group.application.id]
-  associate_public_ip_address = true
-
-  # Attach IAM Instance Profile for S3 and CloudWatch access
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
-
-  # User data script with RDS, S3, and CloudWatch configuration
-  user_data = templatefile("${path.module}/user-data.sh", {
-    environment    = var.environment
-    db_hostname    = aws_db_instance.main.address
-    db_port        = aws_db_instance.main.port
-    db_name        = aws_db_instance.main.db_name
-    db_username    = var.db_username
-    db_password    = random_password.db_password.result
-    s3_bucket_name = aws_s3_bucket.images.bucket
-    aws_region     = var.region
-  })
-
-  # Root volume configuration
-  root_block_device {
-    volume_size           = var.root_volume_size
-    volume_type           = var.root_volume_type
-    delete_on_termination = true
-  }
-
-  disable_api_termination = false
-
-  # Wait for all dependencies
-  depends_on = [
-    aws_internet_gateway.main,
-    aws_route_table_association.public,
-    aws_db_instance.main,
-    aws_s3_bucket.images,
-    aws_iam_instance_profile.ec2_instance_profile,
-    aws_cloudwatch_log_group.application
-  ]
-
-  tags = {
-    Name        = "${var.vpc_name}-application"
-    Environment = var.environment
-    Project     = var.project_name
-    Role        = "web-app"
-  }
-}
+# # EC2 Instance
+# resource "aws_instance" "application" {
+#   ami                         = var.ami_id
+#   instance_type               = var.instance_type
+#   key_name                    = var.key_name
+#   subnet_id                   = aws_subnet.public[0].id
+#   vpc_security_group_ids      = [aws_security_group.application.id]
+#   associate_public_ip_address = true
+#
+#   # Attach IAM Instance Profile for S3 and CloudWatch access
+#   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+#
+#   # User data script with RDS, S3, and CloudWatch configuration
+#   user_data = templatefile("${path.module}/user-data.sh", {
+#     environment    = var.environment
+#     db_hostname    = aws_db_instance.main.address
+#     db_port        = aws_db_instance.main.port
+#     db_name        = aws_db_instance.main.db_name
+#     db_username    = var.db_username
+#     db_password    = random_password.db_password.result
+#     s3_bucket_name = aws_s3_bucket.images.bucket
+#     aws_region     = var.region
+#   })
+#
+#   # Root volume configuration
+#   root_block_device {
+#     volume_size           = var.root_volume_size
+#     volume_type           = var.root_volume_type
+#     delete_on_termination = true
+#   }
+#
+#   disable_api_termination = false
+#
+#   # Wait for all dependencies
+#   depends_on = [
+#     aws_internet_gateway.main,
+#     aws_route_table_association.public,
+#     aws_db_instance.main,
+#     aws_s3_bucket.images,
+#     aws_iam_instance_profile.ec2_instance_profile,
+#     aws_cloudwatch_log_group.application
+#   ]
+#
+#   tags = {
+#     Name        = "${var.vpc_name}-application"
+#     Environment = var.environment
+#     Project     = var.project_name
+#     Role        = "web-app"
+#   }
+# }

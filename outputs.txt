@@ -1,0 +1,129 @@
+alb_arn = "arn:aws:elasticloadbalancing:us-east-1:499305887155:loadbalancer/app/csye6225-dev-alb/3510a93a37144ac5"
+alb_dns_name = "csye6225-dev-alb-1199608958.us-east-1.elb.amazonaws.com"
+alb_healthcheck_url = "http://csye6225-dev-alb-1199608958.us-east-1.elb.amazonaws.com/healthz"
+alb_id = "arn:aws:elasticloadbalancing:us-east-1:499305887155:loadbalancer/app/csye6225-dev-alb/3510a93a37144ac5"
+alb_url = "http://csye6225-dev-alb-1199608958.us-east-1.elb.amazonaws.com"
+alb_zone_id = "Z35SXDOTRQ7X7K"
+application_security_group_id = "sg-0d3c8a76b9cd342bb"
+application_security_group_name = "csye6225-dev-application-sg"
+application_url = "http://54.147.137.123:8080"
+availability_zones_info = {
+  "available_azs" = tolist([
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f",
+  ])
+  "azs_in_use" = tolist([
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+  ])
+  "region" = "us-east-1"
+  "total_azs_available" = 6
+  "total_azs_used" = 3
+}
+cloudwatch_log_group_arn = "arn:aws:logs:us-east-1:499305887155:log-group:/csye6225/dev/application"
+cloudwatch_log_group_name = "/csye6225/dev/application"
+database_security_group_id = "sg-06185bd1e837e4f8c"
+database_security_group_name = "csye6225-dev-database-sg"
+db_parameter_group_name = "csye6225-dev-mysql-params"
+db_subnet_group_name = "csye6225-dev-db-subnet-group"
+environment = "dev"
+health_check_url = "http://54.147.137.123:8080/healthz"
+iam_instance_profile_name = "csye6225-dev-ec2-instance-profile"
+iam_role_name = "csye6225-dev-ec2-instance-role"
+instance_id = "i-06d03de6dd0d6debc"
+instance_private_ip = "10.0.0.6"
+instance_public_dns = "ec2-54-147-137-123.compute-1.amazonaws.com"
+instance_public_ip = "54.147.137.123"
+internet_gateway_id = "igw-019be845fb7dd86c5"
+launch_template_default_version = 1
+launch_template_id = "lt-038692cff622edc07"
+launch_template_latest_version = 1
+launch_template_name = "csye6225-dev-lt-20251103031813355200000005"
+load_balancer_security_group_id = "sg-0af4ba832fd3e66d3"
+load_balancer_security_group_name = "csye6225-dev-lb-sg"
+private_route_table_id = "rtb-0a8c2b6de29e06a7d"
+private_subnet_ids = [
+  "subnet-0ffeb8a0701b80383",
+  "subnet-0b0f6e77a4287d640",
+  "subnet-0f162b0f3348ea8b5",
+]
+private_subnets = [
+  {
+    "availability_zone" = "us-east-1a"
+    "cidr_block" = "10.0.3.0/24"
+    "id" = "subnet-0ffeb8a0701b80383"
+    "name" = "csye6225-dev-private-subnet-1"
+  },
+  {
+    "availability_zone" = "us-east-1b"
+    "cidr_block" = "10.0.4.0/24"
+    "id" = "subnet-0b0f6e77a4287d640"
+    "name" = "csye6225-dev-private-subnet-2"
+  },
+  {
+    "availability_zone" = "us-east-1c"
+    "cidr_block" = "10.0.5.0/24"
+    "id" = "subnet-0f162b0f3348ea8b5"
+    "name" = "csye6225-dev-private-subnet-3"
+  },
+]
+public_route_table_id = "rtb-0a3eea63df78583a0"
+public_subnet_ids = [
+  "subnet-07d66eeb6a0c6ddf8",
+  "subnet-076c053a9455f78d1",
+  "subnet-08cf559828d52250e",
+]
+public_subnets = [
+  {
+    "availability_zone" = "us-east-1a"
+    "cidr_block" = "10.0.0.0/24"
+    "id" = "subnet-07d66eeb6a0c6ddf8"
+    "name" = "csye6225-dev-public-subnet-1"
+  },
+  {
+    "availability_zone" = "us-east-1b"
+    "cidr_block" = "10.0.1.0/24"
+    "id" = "subnet-076c053a9455f78d1"
+    "name" = "csye6225-dev-public-subnet-2"
+  },
+  {
+    "availability_zone" = "us-east-1c"
+    "cidr_block" = "10.0.2.0/24"
+    "id" = "subnet-08cf559828d52250e"
+    "name" = "csye6225-dev-public-subnet-3"
+  },
+]
+rds_database_name = "csye6225"
+rds_endpoint = <sensitive>
+rds_hostname = <sensitive>
+rds_port = 3306
+rds_username = <sensitive>
+s3_bucket_arn = "arn:aws:s3:::csye6225-images-7af647b9-28f6-b037-2ad6-f8b2cce16947"
+s3_bucket_name = "csye6225-images-7af647b9-28f6-b037-2ad6-f8b2cce16947"
+s3_bucket_region = "us-east-1"
+subnet_distribution = {
+  "azs_being_used" = 3
+  "private_distribution" = {
+    "us-east-1a" = 1
+    "us-east-1b" = 1
+    "us-east-1c" = 1
+  }
+  "private_subnets" = 3
+  "public_distribution" = {
+    "us-east-1a" = 1
+    "us-east-1b" = 1
+    "us-east-1c" = 1
+  }
+  "public_subnets" = 3
+  "total_azs_available" = 6
+}
+target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:499305887155:targetgroup/csye6225-dev-tg/74b95be9f9d21349"
+target_group_name = "csye6225-dev-tg"
+vpc_cidr = "10.0.0.0/16"
+vpc_id = "vpc-0f74c365fddad78fa"
+vpc_name = "csye6225-dev"

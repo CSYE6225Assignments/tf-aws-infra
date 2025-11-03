@@ -90,37 +90,6 @@ output "application_security_group_name" {
   value       = aws_security_group.application.name
 }
 
-# EC2 Instance Outputs
-output "instance_id" {
-  description = "EC2 instance ID"
-  value       = aws_instance.application.id
-}
-
-output "instance_public_ip" {
-  description = "EC2 instance public IP address"
-  value       = aws_instance.application.public_ip
-}
-
-output "instance_public_dns" {
-  description = "EC2 instance public DNS name"
-  value       = aws_instance.application.public_dns
-}
-
-output "instance_private_ip" {
-  description = "EC2 instance private IP address"
-  value       = aws_instance.application.private_ip
-}
-
-output "application_url" {
-  description = "Application URL"
-  value       = "http://${aws_instance.application.public_ip}:${var.app_port}"
-}
-
-output "health_check_url" {
-  description = "Health check endpoint URL"
-  value       = "http://${aws_instance.application.public_ip}:${var.app_port}/healthz"
-}
-
 # S3 Bucket Outputs
 output "s3_bucket_name" {
   description = "Name of the S3 bucket for images"
@@ -280,4 +249,35 @@ output "alb_url" {
 output "alb_healthcheck_url" {
   description = "Health check URL via Load Balancer"
   value       = "http://${aws_lb.application.dns_name}/healthz"
+}
+
+# AUTO SCALING GROUP OUTPUTS
+output "asg_id" {
+  description = "Auto Scaling Group ID"
+  value       = aws_autoscaling_group.application.id
+}
+
+output "asg_name" {
+  description = "Auto Scaling Group name"
+  value       = aws_autoscaling_group.application.name
+}
+
+output "asg_arn" {
+  description = "Auto Scaling Group ARN"
+  value       = aws_autoscaling_group.application.arn
+}
+
+output "asg_min_size" {
+  description = "ASG minimum size"
+  value       = aws_autoscaling_group.application.min_size
+}
+
+output "asg_max_size" {
+  description = "ASG maximum size"
+  value       = aws_autoscaling_group.application.max_size
+}
+
+output "asg_desired_capacity" {
+  description = "ASG desired capacity"
+  value       = aws_autoscaling_group.application.desired_capacity
 }
