@@ -240,3 +240,44 @@ output "launch_template_default_version" {
   description = "Default version of the launch template"
   value       = aws_launch_template.application.default_version
 }
+
+# LOAD BALANCER OUTPUTS
+output "alb_id" {
+  description = "ID of the Application Load Balancer"
+  value       = aws_lb.application.id
+}
+
+output "alb_arn" {
+  description = "ARN of the Application Load Balancer"
+  value       = aws_lb.application.arn
+}
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = aws_lb.application.dns_name
+}
+
+output "alb_zone_id" {
+  description = "Zone ID of the Application Load Balancer"
+  value       = aws_lb.application.zone_id
+}
+
+output "target_group_arn" {
+  description = "ARN of the Target Group"
+  value       = aws_lb_target_group.application.arn
+}
+
+output "target_group_name" {
+  description = "Name of the Target Group"
+  value       = aws_lb_target_group.application.name
+}
+
+output "alb_url" {
+  description = "URL to access the application via Load Balancer"
+  value       = "http://${aws_lb.application.dns_name}"
+}
+
+output "alb_healthcheck_url" {
+  description = "Health check URL via Load Balancer"
+  value       = "http://${aws_lb.application.dns_name}/healthz"
+}
