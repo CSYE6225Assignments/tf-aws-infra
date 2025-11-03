@@ -199,3 +199,59 @@ variable "asg_default_cooldown" {
   type        = number
   default     = 60
 }
+
+# Auto Scaling Policy Configuration
+variable "scale_up_cpu_threshold" {
+  description = "CPU threshold for scaling up (percentage)"
+  type        = number
+  default     = 5.0
+
+  validation {
+    condition     = var.scale_up_cpu_threshold >= 1 && var.scale_up_cpu_threshold <= 100
+    error_message = "CPU threshold must be between 1 and 100."
+  }
+}
+
+variable "scale_down_cpu_threshold" {
+  description = "CPU threshold for scaling down (percentage)"
+  type        = number
+  default     = 3.0
+
+  validation {
+    condition     = var.scale_down_cpu_threshold >= 1 && var.scale_down_cpu_threshold <= 100
+    error_message = "CPU threshold must be between 1 and 100."
+  }
+}
+
+variable "scale_up_adjustment" {
+  description = "Number of instances to add when scaling up"
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.scale_up_adjustment >= 1 && var.scale_up_adjustment <= 10
+    error_message = "Scale up adjustment must be between 1 and 10."
+  }
+}
+
+variable "scale_down_adjustment" {
+  description = "Number of instances to remove when scaling down"
+  type        = number
+  default     = -1
+
+  validation {
+    condition     = var.scale_down_adjustment >= -10 && var.scale_down_adjustment <= -1
+    error_message = "Scale down adjustment must be between -10 and -1."
+  }
+}
+
+variable "scaling_policy_cooldown" {
+  description = "Cooldown period (seconds) between scaling actions"
+  type        = number
+  default     = 60
+
+  validation {
+    condition     = var.scaling_policy_cooldown >= 0
+    error_message = "Cooldown must be non-negative."
+  }
+}

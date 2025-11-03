@@ -54,7 +54,7 @@ resource "aws_db_instance" "main" {
 
   # Engine Configuration
   engine            = "mysql"
-  engine_version    = "8.0.37"
+  engine_version    = "8.0.40"
   instance_class    = var.db_instance_class
   allocated_storage = var.db_allocated_storage
   storage_type      = "gp3"
