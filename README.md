@@ -1201,3 +1201,362 @@ terraform destroy -var-file="dev.tfvars"
 ```
 
 **Note:** This deletes all data including uploaded images and database records.
+
+# Assignment 8: Load Balancing and Auto Scaling
+
+This assignment extends the previous infrastructure to add high availability, auto-scaling, and load balancing capabilities.
+
+## What's New in This Assignment
+
+- **Application Load Balancer (ALB)**: Distributes traffic across multiple instances
+- **Auto Scaling Group (ASG)**: Automatically manages 3-5 instances based on CPU load
+- **Launch Template**: Standardized instance configuration
+- **CPU-Based Scaling Policies**: Dynamic scaling based on demand
+- **Custom Domain**: Route53 DNS pointing to Load Balancer
+- **Enhanced Security**: Restricted access through Load Balancer only
+
+## Architecture
+
+```
+Internet
+   ↓
+Route53 (dev.yourdomain.com)
+   ↓
+Application Load Balancer (Port 80)
+   ↓
+Target Group (Health checks on /healthz)
+   ↓
+Auto Scaling Group (3-5 instances)
+   ├─ EC2 Instance 1 (us-east-1a)
+   ├─ EC2 Instance 2 (us-east-1b)
+   └─ EC2 Instance 3 (us-east-1c)
+   ↓
+RDS MySQL (Private subnets)
+S3 Bucket (Image storage)
+```
+
+## Prerequisites
+
+### 1. Domain Setup (Manual - AWS Console)
+
+**In Root AWS Account:**
+- Create Route53 hosted zone for `yourdomain.com`
+- Update domain registrar nameservers to Route53 NS records
+
+**In DEV AWS Account:**
+- Create Route53 hosted zone for `dev.yourdomain.com`
+- Add NS delegation in root account for dev subdomain
+
+**In DEMO AWS Account:**
+- Create Route53 hosted zone for `demo.yourdomain.com`
+- Add NS delegation in root account for demo subdomain
+
+### 2. IAM Permissions Update
+
+Add these permissions to your `terraform-dev` IAM user:
+
+**New Required Permissions:**
+- `elasticloadbalancing:*` (for ALB, Target Groups, Listeners)
+- `autoscaling:*` (for Auto Scaling Groups and Policies)
+- `route53:*` (for DNS record management)
+- `ec2:CreateLaunchTemplate`, `ec2:DescribeLaunchTemplates`, etc. (for Launch Templates)
+- `cloudwatch:PutMetricAlarm`, `cloudwatch:DeleteAlarms` (for scaling alarms)
+
+**Quick Fix:** Attach AWS managed policies:
+- `ElasticLoadBalancingFullAccess`
+- `AutoScalingFullAccess`
+- `AmazonRoute53FullAccess`
+
+### 3. Custom AMI
+
+Ensure you have a custom AMI built with:
+- Ubuntu 24.04 LTS
+- Java 17 (JRE)
+- Application JAR at `/opt/csye6225/application.jar`
+- CloudWatch Agent configured
+- Systemd service configured
+
+## New Configuration Variables
+
+Add to your `.tfvars` file:
+
+```hcl
+# Auto Scaling Configuration
+asg_min_size                  = 3
+asg_max_size                  = 5
+asg_desired_capacity          = 3
+asg_health_check_grace_period = 300
+asg_default_cooldown          = 60
+
+# Auto Scaling Policies
+scale_up_cpu_threshold   = 5.0
+scale_down_cpu_threshold = 3.0
+scale_up_adjustment      = 1
+scale_down_adjustment    = -1
+scaling_policy_cooldown  = 60
+
+# DNS Configuration
+domain_name = "yourdomain.com"  # Root domain (subdomain auto-generated)
+
+# Security
+ssh_cidr = "your.ip.address/32"  # Restrict SSH to your IP
+```
+
+## Deployment Steps
+
+### Phase 1: Security Groups
+```bash
+# Creates Load Balancer and Application security groups
+# Restricts direct access to application (only via LB)
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Load Balancer Security Group (ports 80, 443 from internet)
+- Updated Application Security Group (port 8080 from LB only)
+
+### Phase 2: Launch Template
+```bash
+# Creates reusable EC2 configuration for Auto Scaling
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Launch Template with AMI, IAM profile, user-data
+
+### Phase 3: Load Balancer
+```bash
+# Creates ALB infrastructure
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Application Load Balancer
+- Target Group (health checks on `/healthz`)
+- HTTP Listener (port 80 → 8080)
+
+### Phase 4: Auto Scaling Group
+```bash
+# Replaces standalone EC2 with ASG
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Auto Scaling Group (launches 3 instances)
+- Instances automatically registered to Target Group
+
+**Wait 10 minutes** for all instances to become healthy.
+
+### Phase 5: Scaling Policies
+```bash
+# Adds CPU-based auto-scaling
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Scale-up policy (CPU > 5%, add 1 instance)
+- Scale-down policy (CPU < 3%, remove 1 instance)
+- CloudWatch alarms for both policies
+
+### Phase 6: Route53 DNS
+```bash
+# Points custom domain to Load Balancer
+terraform apply -var-file="dev.tfvars"
+```
+
+**What's Created:**
+- Route53 A record (alias to ALB)
+
+**Wait 2 minutes** for DNS propagation.
+
+## Verification & Testing
+
+### 1. Check Infrastructure
+```bash
+# Verify all targets are healthy
+aws elbv2 describe-target-health \
+  --target-group-arn $(terraform output -raw target_group_arn) \
+  --profile dev --region us-east-1
+
+# Check ASG status
+aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-names $(terraform output -raw asg_name) \
+  --profile dev --region us-east-1 \
+  --query 'AutoScalingGroups[0].{Min:MinSize,Max:MaxSize,Desired:DesiredCapacity}'
+```
+
+### 2. Test Application Endpoints
+```bash
+DOMAIN=$(terraform output -raw domain_name)
+
+# Health check
+curl http://$DOMAIN/healthz
+
+# Create user
+curl -X POST http://$DOMAIN/v1/user \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test@example.com","password":"test1234","first_name":"Test","last_name":"User"}'
+
+# Get user (requires authentication)
+curl -u test@example.com:test1234 http://$DOMAIN/v1/user/1
+```
+
+### 3. Test Auto Scaling
+
+**Generate CPU Load:**
+```bash
+# SSH into an instance
+ssh -i your-key.pem ubuntu@<instance-ip>
+
+# Install stress tool
+sudo apt-get update && sudo apt-get install -y stress
+
+# Generate load for 5 minutes
+stress --cpu 4 --timeout 300
+```
+
+**Monitor Scaling (in separate terminal):**
+```bash
+watch -n 15 'aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-names $(terraform output -raw asg_name) \
+  --profile dev --region us-east-1 \
+  --query "AutoScalingGroups[0].{Desired:DesiredCapacity,Running:length(Instances)}"'
+```
+
+**Expected Behavior:**
+- After 2-3 minutes: Desired capacity increases to 4
+- After 5-7 minutes: 4 instances running
+- After load stops: Scales back down to 3 (takes 10-15 minutes)
+
+### 4. Verify CloudWatch Alarms
+```bash
+aws cloudwatch describe-alarms \
+  --alarm-name-prefix "csye6225-dev-cpu" \
+  --profile dev --region us-east-1
+```
+
+Expected: 2 alarms (cpu-high and cpu-low)
+
+## Key Features
+
+### Load Balancing
+- **Cross-zone load balancing**: Enabled
+- **Health check interval**: 30 seconds
+- **Healthy threshold**: 2 consecutive successes
+- **Unhealthy threshold**: 2 consecutive failures
+- **Timeout**: 5 seconds
+
+### Auto Scaling
+- **Health check type**: ELB (uses Target Group health)
+- **Grace period**: 300 seconds (5 minutes)
+- **Cooldown**: 60 seconds between scaling actions
+- **Termination policy**: Default (oldest instance first)
+
+### Security
+- **No direct EC2 access**: All traffic flows through Load Balancer
+- **SSH restricted**: Only from specified IP (configurable via `ssh_cidr`)
+- **Database isolation**: RDS only accessible from application instances
+- **Encrypted storage**: S3 and EBS volumes encrypted
+
+## Troubleshooting
+
+### 504 Gateway Timeout
+**Cause**: No healthy targets in Target Group
+
+**Check:**
+```bash
+# View target health
+aws elbv2 describe-target-health \
+  --target-group-arn $(terraform output -raw target_group_arn) \
+  --profile dev --region us-east-1
+
+# Common issues:
+# - Target.Timeout: Security group rule missing (port 8080)
+# - Target.FailedHealthChecks: Application not responding
+```
+
+**Fix for Missing Port 8080 Rule:**
+```bash
+APP_SG_ID=$(terraform output -raw application_security_group_id)
+LB_SG_ID=$(terraform output -raw load_balancer_security_group_id)
+
+# Add rule manually
+aws ec2 authorize-security-group-ingress \
+  --group-id "$APP_SG_ID" \
+  --protocol tcp \
+  --port 8080 \
+  --source-group "$LB_SG_ID" \
+  --profile dev --region us-east-1
+
+# Import into Terraform
+IMPORT_ID="${APP_SG_ID}_ingress_tcp_8080_8080_${LB_SG_ID}"
+terraform import -var-file="dev.tfvars" \
+  aws_security_group_rule.app_from_lb "$IMPORT_ID"
+```
+
+### Application Not Starting on Instances
+**Check**: User-data logs and application service
+```bash
+ssh -i your-key.pem ubuntu@<instance-ip>
+sudo cat /var/log/user-data.log | tail -100
+sudo systemctl status csye6225.service
+sudo journalctl -u csye6225.service -n 50
+```
+
+**Common causes:**
+- Database connection failure (check RDS endpoint)
+- Missing application.properties (user-data script failed)
+- CloudWatch Agent issues (check log path: `/csye6225/{environment}/application`)
+
+### Scaling Not Triggering
+**Check**: CloudWatch alarm state
+```bash
+aws cloudwatch describe-alarms \
+  --alarm-names $(terraform output -raw cpu_high_alarm_name) \
+  --profile dev --region us-east-1
+```
+
+**Verify CPU metrics are being collected:**
+```bash
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/EC2 \
+  --metric-name CPUUtilization \
+  --dimensions Name=AutoScalingGroupName,Value=$(terraform output -raw asg_name) \
+  --start-time $(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%S) \
+  --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+  --period 60 \
+  --statistics Average \
+  --profile dev --region us-east-1
+```
+
+## Resource Naming Convention
+
+All resources follow the pattern: `{vpc_name}-{resource-type}`
+
+Examples:
+- VPC: `csye6225-dev-vpc`
+- Load Balancer: `csye6225-dev-alb`
+- Auto Scaling Group: `csye6225-dev-asg`
+- Target Group: `csye6225-dev-tg`
+- Security Groups: `csye6225-dev-lb-sg`, `csye6225-dev-application-sg`
+
+## Important Notes
+
+**Deployment Timeline:**
+- Initial apply: 10-12 minutes
+- Instances healthy: Additional 5-8 minutes
+- Total: ~15-20 minutes from apply to fully functional
+
+**Cost Management:**
+- Running 24/7: ~$55-60/month
+- Running for 2-day demo: ~$3-5
+- **Recommendation**: Deploy only 1-2 days before presentation, destroy after
+
+**State Management:**
+- Never commit `terraform.tfstate` to Git (contains sensitive data)
+- Always use `-var-file` flag to specify environment
+- Keep separate tfvars for DEV and DEMO accounts
+
+**Common Gotcha:**
+- Port 8080 security group rule may need manual import after environment changes
+- Always verify rule exists: `aws ec2 describe-security-groups --group-ids <sg-id> --query 'SecurityGroups[0].IpPermissions[?FromPort==\`8080
