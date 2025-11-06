@@ -255,3 +255,14 @@ variable "scaling_policy_cooldown" {
     error_message = "Cooldown must be non-negative."
   }
 }
+
+# DNS Configuration
+variable "domain_name" {
+  description = "Domain name (e.g., yourdomain.com). The subdomain will be environment.domain_name"
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$", var.domain_name))
+    error_message = "Must be a valid domain name."
+  }
+}

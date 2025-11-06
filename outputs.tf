@@ -312,3 +312,24 @@ output "cpu_low_alarm_name" {
   description = "Name of the CPU low alarm"
   value       = aws_cloudwatch_metric_alarm.cpu_low.alarm_name
 }
+
+# DNS OUTPUTS
+output "domain_name" {
+  description = "Custom domain name"
+  value       = "${var.environment}.${var.domain_name}"
+}
+
+output "application_url_custom_domain" {
+  description = "Application URL via custom domain"
+  value       = "http://${var.environment}.${var.domain_name}"
+}
+
+output "route53_zone_id" {
+  description = "Route53 hosted zone ID"
+  value       = data.aws_route53_zone.domain.zone_id
+}
+
+output "route53_nameservers" {
+  description = "Route53 name servers for the hosted zone"
+  value       = data.aws_route53_zone.domain.name_servers
+}
