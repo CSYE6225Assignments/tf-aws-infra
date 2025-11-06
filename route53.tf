@@ -2,7 +2,7 @@
 # ROUTE53 DATA SOURCE - EXISTING HOSTED ZONE
 # ==============================================================================
 data "aws_route53_zone" "domain" {
-  name         = "${var.environment}.${var.domain_name}"  # Will be demo.dhruvbaraiya.me
+  name         = "${var.environment}.${var.domain_name}" # Will be demo.dhruvbaraiya.me
   private_zone = false
 }
 
@@ -11,7 +11,7 @@ data "aws_route53_zone" "domain" {
 # ==============================================================================
 resource "aws_route53_record" "application" {
   zone_id = data.aws_route53_zone.domain.zone_id
-  name    = "${var.environment}.${var.domain_name}"  # Will be demo.dhruvbaraiya.me
+  name    = "${var.environment}.${var.domain_name}" # Will be demo.dhruvbaraiya.me
   type    = "A"
 
   alias {
