@@ -93,6 +93,12 @@ resource "aws_security_group_rule" "app_from_lb" {
   security_group_id        = aws_security_group.application.id
   source_security_group_id = aws_security_group.load_balancer.id
   description              = "Application traffic from Load Balancer only"
+
+  # Ensure security groups are created first
+  depends_on = [
+    aws_security_group.application,
+    aws_security_group.load_balancer
+  ]
 }
 
 # ==============================================================================
