@@ -40,6 +40,7 @@ resource "aws_launch_template" "application" {
       volume_type           = var.root_volume_type
       delete_on_termination = true
       encrypted             = true
+      #kms_key_id            = aws_kms_key.ec2.arn
     }
   }
 
