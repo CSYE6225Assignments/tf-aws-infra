@@ -25,6 +25,7 @@ resource "aws_launch_template" "application" {
     db_secret_id    = aws_secretsmanager_secret.db_password.id
     email_secret_id = aws_secretsmanager_secret.email_credentials.id
     s3_bucket_name  = aws_s3_bucket.images.bucket
+    sns_topic_arn   = aws_sns_topic.user_verification.arn
     aws_region      = var.region
   }))
 
