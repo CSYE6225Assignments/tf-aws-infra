@@ -136,6 +136,9 @@ aws.region=${aws_region}
 aws.s3.bucket-name=${s3_bucket_name}
 storage.type=s3
 
+# SNS Configuration
+aws.sns.topic-arn=${sns_topic_arn}
+
 # Email Configuration (from Secrets Manager)
 email.api.key=$EMAIL_API_KEY
 email.from=$EMAIL_FROM
