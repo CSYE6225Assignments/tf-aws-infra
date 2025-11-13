@@ -126,3 +126,40 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_attachment" {
   role       = aws_iam_role.ec2_instance_role.name
   policy_arn = aws_iam_policy.cloudwatch_policy.arn
 }
+
+# IAM Policy for KMS Access
+resource "aws_iam_policy" "kms_policy" {
+  name        = "${var.vpc_name}-kms-policy"
+  description = "Policy to allow EC2 to use KMS keys"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:DescribeKey",
+          "kms:GenerateDataKey"
+        ]
+        Resource = [
+          aws_kms_key.ec2.arn,
+          aws_kms_key.s3.arn
+        ]
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.vpc_name}-kms-policy"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Attach KMS Policy to EC2 Role
+resource "aws_iam_role_policy_attachment" "kms_attachment" {
+  role       = aws_iam_role.ec2_instance_role.name
+  policy_arn = aws_iam_policy.kms_policy.arn
+}
