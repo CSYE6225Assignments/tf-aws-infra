@@ -333,3 +333,46 @@ output "route53_nameservers" {
   description = "Route53 name servers for the hosted zone"
   value       = data.aws_route53_zone.domain.name_servers
 }
+
+# ==============================================================================
+# KMS Key Outputs
+# ==============================================================================
+output "kms_ec2_key_id" {
+  description = "ID of KMS key for EC2"
+  value       = aws_kms_key.ec2.id
+}
+
+output "kms_ec2_key_arn" {
+  description = "ARN of KMS key for EC2"
+  value       = aws_kms_key.ec2.arn
+}
+
+output "kms_rds_key_id" {
+  description = "ID of KMS key for RDS"
+  value       = aws_kms_key.rds.id
+}
+
+output "kms_rds_key_arn" {
+  description = "ARN of KMS key for RDS"
+  value       = aws_kms_key.rds.arn
+}
+
+output "kms_s3_key_id" {
+  description = "ID of KMS key for S3"
+  value       = aws_kms_key.s3.id
+}
+
+output "kms_s3_key_arn" {
+  description = "ARN of KMS key for S3"
+  value       = aws_kms_key.s3.arn
+}
+
+output "kms_secrets_key_id" {
+  description = "ID of KMS key for Secrets Manager"
+  value       = aws_kms_key.secrets.id
+}
+
+output "kms_secrets_key_arn" {
+  description = "ARN of KMS key for Secrets Manager"
+  value       = aws_kms_key.secrets.arn
+}
