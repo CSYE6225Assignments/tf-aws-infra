@@ -401,3 +401,16 @@ output "email_secret_arn" {
   description = "ARN of email credentials secret"
   value       = aws_secretsmanager_secret.email_credentials.arn
 }
+
+# ==============================================================================
+# SNS Topic Outputs
+# ==============================================================================
+output "sns_topic_arn" {
+  description = "ARN of SNS topic for user verification"
+  value       = aws_sns_topic.user_verification.arn
+}
+
+output "sns_topic_name" {
+  description = "Name of SNS topic"
+  value       = aws_sns_topic.user_verification.name
+}
