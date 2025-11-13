@@ -161,6 +161,10 @@ management.metrics.distribution.percentiles-histogram.all=false
 
 # Environment
 ENVIRONMENT=${environment}
+
+# Email Verification
+EMAIL_VERIFICATION_ENABLED=true
+DOMAIN_NAME=dhruvbaraiya.me
 EOF
 
 # Set ownership and permissions

@@ -1,0 +1,78 @@
+{
+    "IamInstanceProfile": {
+        "Name": "csye6225-dev-ec2-instance-profile"
+    },
+    "BlockDeviceMappings": [
+        {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+                "Encrypted": true,
+                "DeleteOnTermination": true,
+                "KmsKeyId": "arn:aws:kms:us-east-1:740535718147:key/847590ff-cf21-4fe3-a63f-ea345089c532",
+                "VolumeSize": 25,
+                "VolumeType": "gp3"
+            }
+        }
+    ],
+    "NetworkInterfaces": [
+        {
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "DeviceIndex": 0,
+            "Groups": [
+                "sg-02dda706a227a2ad8"
+            ],
+            "NetworkCardIndex": 0
+        }
+    ],
+    "ImageId": "ami-07439482c8ae6b2c1",
+    "InstanceType": "t2.micro",
+    "KeyName": "csye6225-aws-key",
+    "UserData": "IyEvYmluL2Jhc2gKc2V0IC1ldW8gcGlwZWZhaWwKCiMgTG9nIGV2ZXJ5dGhpbmcgdG8gZmlsZSBhbmQgY29uc29sZQpleGVjID4gPih0ZWUgL3Zhci9sb2cvdXNlci1kYXRhLmxvZ3xsb2dnZXIgLXQgdXNlci1kYXRhIC1zIDI+L2Rldi9jb25zb2xlKSAyPiYxCgplY2hvICI9PT0gU3RhcnRpbmcgVXNlciBEYXRhIFNjcmlwdCA9PT0iCmRhdGUKCiMgV2FpdCBmb3IgbmV0d29yawpzbGVlcCAxMAoKIyBJbnN0YWxsIG5ldGNhdCBmb3IgZGF0YWJhc2UgY29ubmVjdGl2aXR5IGNoZWNrCmFwdC1nZXQgdXBkYXRlIC15CmFwdC1nZXQgaW5zdGFsbCAteSBuZXRjYXQtb3BlbmJzZAoKIyBHZXQgaW5zdGFuY2UgSUQgdmlhIElNRFN2MgpUT0tFTj0kKGN1cmwgLXNYIFBVVCAiaHR0cDovLzE2OS4yNTQuMTY5LjI1NC9sYXRlc3QvYXBpL3Rva2VuIiAtSCAiWC1hd3MtZWMyLW1ldGFkYXRhLXRva2VuLXR0bC1zZWNvbmRzOiAyMTYwMCIpCklOU1RBTkNFX0lEPSQoY3VybCAtc0ggIlgtYXdzLWVjMi1tZXRhZGF0YS10b2tlbjogJFRPS0VOIiBodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2xhdGVzdC9tZXRhLWRhdGEvaW5zdGFuY2UtaWQgfHwgZWNobyAidW5rbm93biIpCmVjaG8gIkluc3RhbmNlIElEOiAkSU5TVEFOQ0VfSUQiCmVjaG8gIkVudmlyb25tZW50OiBkZXYiCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBDb25maWd1cmUgQ2xvdWRXYXRjaCBBZ2VudAojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KZWNobyAiPT09IENvbmZpZ3VyaW5nIENsb3VkV2F0Y2ggQWdlbnQgPT09IgoKIyBSZXBsYWNlIHBsYWNlaG9sZGVyIGluIENsb3VkV2F0Y2ggY29uZmlnCiMgVXNpbmcgJXtFTlZJUk9OTUVOVH0lJSB0byBhdm9pZCBUZXJyYWZvcm0gdGVtcGxhdGUgcGFyc2luZyBpc3N1ZXMKc2VkIC1pICdzLyR7RU5WSVJPTk1FTlR9L2Rldi9nJyAvb3B0L2F3cy9hbWF6b24tY2xvdWR3YXRjaC1hZ2VudC9ldGMvY2xvdWR3YXRjaC1jb25maWcuanNvbgoKIyBWZXJpZnkgcmVwbGFjZW1lbnQgd29ya2VkCmVjaG8gIkNsb3VkV2F0Y2ggY29uZmlnIGFmdGVyIGVudmlyb25tZW50IHN1YnN0aXR1dGlvbjoiCmdyZXAgLWkgImxvZ19ncm91cF9uYW1lIiAvb3B0L2F3cy9hbWF6b24tY2xvdWR3YXRjaC1hZ2VudC9ldGMvY2xvdWR3YXRjaC1jb25maWcuanNvbiB8fCB0cnVlCgojIFN0YXJ0IENsb3VkV2F0Y2ggQWdlbnQKZWNobyAiU3RhcnRpbmcgQ2xvdWRXYXRjaCBBZ2VudC4uLiIKL29wdC9hd3MvYW1hem9uLWNsb3Vkd2F0Y2gtYWdlbnQvYmluL2FtYXpvbi1jbG91ZHdhdGNoLWFnZW50LWN0bCBcCiAgICAtYSBmZXRjaC1jb25maWcgXAogICAgLW0gZWMyIFwKICAgIC1zIFwKICAgIC1jIGZpbGU6L29wdC9hd3MvYW1hem9uLWNsb3Vkd2F0Y2gtYWdlbnQvZXRjL2Nsb3Vkd2F0Y2gtY29uZmlnLmpzb24KCiMgRW5zdXJlIGFnZW50IHN0YXJ0cyBvbiByZWJvb3QKc3lzdGVtY3RsIGVuYWJsZSBhbWF6b24tY2xvdWR3YXRjaC1hZ2VudAoKIyBWZXJpZnkgYWdlbnQgc3RhcnRlZApzbGVlcCAzCkFHRU5UX1NUQVRVUz0kKC9vcHQvYXdzL2FtYXpvbi1jbG91ZHdhdGNoLWFnZW50L2Jpbi9hbWF6b24tY2xvdWR3YXRjaC1hZ2VudC1jdGwgLWEgc3RhdHVzIDI+L2Rldi9udWxsIHwgZ3JlcCAtbyAnInN0YXR1cyI6IlteIl0qIicgfCBjdXQgLWQnIicgLWY0IHx8IGVjaG8gInVua25vd24iKQplY2hvICJDbG91ZFdhdGNoIEFnZW50IHN0YXR1czogJEFHRU5UX1NUQVRVUyIKCmlmIFsgIiRBR0VOVF9TVEFUVVMiID0gInJ1bm5pbmciIF07IHRoZW4KICAgIGVjaG8gIiBDbG91ZFdhdGNoIEFnZW50IHN0YXJ0ZWQgc3VjY2Vzc2Z1bGx5IgplbHNlCiAgICBlY2hvICIgQ2xvdWRXYXRjaCBBZ2VudCBmYWlsZWQgdG8gc3RhcnQiCiAgICB0YWlsIC0yMCAvb3B0L2F3cy9hbWF6b24tY2xvdWR3YXRjaC1hZ2VudC9sb2dzL2FtYXpvbi1jbG91ZHdhdGNoLWFnZW50LmxvZyB8fCB0cnVlCmZpCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBDb25maWd1cmUgQXBwbGljYXRpb24KIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmVjaG8gIj09PSBDcmVhdGluZyBhcHBsaWNhdGlvbi5wcm9wZXJ0aWVzID09PSIKCmNhdCA+IC9vcHQvY3N5ZTYyMjUvYXBwbGljYXRpb24ucHJvcGVydGllcyA8PEVPRgojIFNlcnZlciBDb25maWd1cmF0aW9uCnNlcnZlci5wb3J0PTgwODAKCiMgQXBwbGljYXRpb24gQ29uZmlndXJhdGlvbgpzcHJpbmcuYXBwbGljYXRpb24ubmFtZT1jc3llNjIyNQoKIyBEYXRhYmFzZSBDb25maWd1cmF0aW9uIChSRFMpCnNwcmluZy5kYXRhc291cmNlLnVybD1qZGJjOm15c3FsOi8vY3N5ZTYyMjUuY3dmbW93Y3dtbDdsLnVzLWVhc3QtMS5yZHMuYW1hem9uYXdzLmNvbTozMzA2L2NzeWU2MjI1P3VzZVNTTD1mYWxzZSZzZXJ2ZXJUaW1lem9uZT1VVEMmYWxsb3dQdWJsaWNLZXlSZXRyaWV2YWw9dHJ1ZQpzcHJpbmcuZGF0YXNvdXJjZS51c2VybmFtZT1jc3llNjIyNQpzcHJpbmcuZGF0YXNvdXJjZS5wYXNzd29yZD1hMV1oTW0yb1Y2TmdpO0pECnNwcmluZy5kYXRhc291cmNlLmRyaXZlci1jbGFzcy1uYW1lPWNvbS5teXNxbC5jai5qZGJjLkRyaXZlcgoKIyBDb25uZWN0aW9uIFBvb2wgU2V0dGluZ3MKc3ByaW5nLmRhdGFzb3VyY2UuaGlrYXJpLm1heGltdW0tcG9vbC1zaXplPTEwCnNwcmluZy5kYXRhc291cmNlLmhpa2FyaS5taW5pbXVtLWlkbGU9MgpzcHJpbmcuZGF0YXNvdXJjZS5oaWthcmkuY29ubmVjdGlvbi10aW1lb3V0PTMwMDAwCnNwcmluZy5kYXRhc291cmNlLmhpa2FyaS5yZWdpc3Rlci1tYmVhbnM9dHJ1ZQoKIyBKUEEgQ29uZmlndXJhdGlvbgpzcHJpbmcuanBhLmhpYmVybmF0ZS5kZGwtYXV0bz11cGRhdGUKc3ByaW5nLmpwYS5zaG93LXNxbD1mYWxzZQpzcHJpbmcuanBhLnByb3BlcnRpZXMuaGliZXJuYXRlLmRpYWxlY3Q9b3JnLmhpYmVybmF0ZS5kaWFsZWN0Lk15U1FMOERpYWxlY3QKc3ByaW5nLmpwYS5wcm9wZXJ0aWVzLmhpYmVybmF0ZS5qZGJjLnRpbWVfem9uZT1VVEMKCiMgQVdTIENvbmZpZ3VyYXRpb24KYXdzLnJlZ2lvbj11cy1lYXN0LTEKYXdzLnMzLmJ1Y2tldC1uYW1lPWNzeWU2MjI1LWltYWdlcy02ZjFhODcxMC0wNDk1LTE1NWUtMTAyZS04NTc3ZTQ0YzdhMGMKc3RvcmFnZS50eXBlPXMzCgojIEZpbGUgVXBsb2FkIENvbmZpZ3VyYXRpb24Kc3ByaW5nLnNlcnZsZXQubXVsdGlwYXJ0LmVuYWJsZWQ9dHJ1ZQpzcHJpbmcuc2VydmxldC5tdWx0aXBhcnQubWF4LWZpbGUtc2l6ZT01TUIKc3ByaW5nLnNlcnZsZXQubXVsdGlwYXJ0Lm1heC1yZXF1ZXN0LXNpemU9NU1CCgojIEFjdHVhdG9yIENvbmZpZ3VyYXRpb24gKERpc2FibGUgRW5kcG9pbnRzKQptYW5hZ2VtZW50LmVuZHBvaW50cy53ZWIuZXhwb3N1cmUuaW5jbHVkZT0KbWFuYWdlbWVudC5lbmRwb2ludHMuam14LmV4cG9zdXJlLmluY2x1ZGU9CgojIE1ldHJpY3MgQ29uZmlndXJhdGlvbiAoU3RhdHNEIEV4cG9ydCkKbWFuYWdlbWVudC5zdGF0c2QubWV0cmljcy5leHBvcnQuZW5hYmxlZD10cnVlCm1hbmFnZW1lbnQuc3RhdHNkLm1ldHJpY3MuZXhwb3J0LmZsYXZvcj1ldHN5Cm1hbmFnZW1lbnQuc3RhdHNkLm1ldHJpY3MuZXhwb3J0Lmhvc3Q9bG9jYWxob3N0Cm1hbmFnZW1lbnQuc3RhdHNkLm1ldHJpY3MuZXhwb3J0LnBvcnQ9ODEyNQptYW5hZ2VtZW50Lm1ldHJpY3MuZGlzdHJpYnV0aW9uLnBlcmNlbnRpbGVzLWhpc3RvZ3JhbS5hbGw9ZmFsc2UKCiMgRW52aXJvbm1lbnQKRU5WSVJPTk1FTlQ9ZGV2CkVPRgoKIyBTZXQgb3duZXJzaGlwIGFuZCBwZXJtaXNzaW9ucwpjaG93biBjc3llNjIyNTpjc3llNjIyNSAvb3B0L2NzeWU2MjI1L2FwcGxpY2F0aW9uLnByb3BlcnRpZXMKY2htb2QgNjQwIC9vcHQvY3N5ZTYyMjUvYXBwbGljYXRpb24ucHJvcGVydGllcwoKZWNobyAiIEFwcGxpY2F0aW9uIHByb3BlcnRpZXMgY3JlYXRlZCIKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIFdhaXQgZm9yIERhdGFiYXNlCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQplY2hvICI9PT0gV2FpdGluZyBmb3IgZGF0YWJhc2UgPT09Igpmb3IgaSBpbiB7MS4uMzB9OyBkbwogIGlmIG5jIC16IC13NSBjc3llNjIyNS5jd2Ztb3djd21sN2wudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tIDMzMDYgMj4vZGV2L251bGw7IHRoZW4KICAgIGVjaG8gIiBEYXRhYmFzZSBpcyByZWFjaGFibGUhIgogICAgYnJlYWsKICBmaQogIGVjaG8gIkF0dGVtcHQgJGkvMzA6IFdhaXRpbmcgZm9yIGRhdGFiYXNlLi4uIgogIHNsZWVwIDEwCmRvbmUKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBTdGFydCBBcHBsaWNhdGlvbgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KZWNobyAiPT09IFN0YXJ0aW5nIGFwcGxpY2F0aW9uID09PSIKc3lzdGVtY3RsIGRhZW1vbi1yZWxvYWQKc3lzdGVtY3RsIGVuYWJsZSBjc3llNjIyNS5zZXJ2aWNlCnN5c3RlbWN0bCByZXN0YXJ0IGNzeWU2MjI1LnNlcnZpY2UKCiMgV2FpdCBmb3IgYXBwbGljYXRpb24gdG8gc3RhcnQKc2xlZXAgNQoKIyBDaGVjayBhcHBsaWNhdGlvbiBzdGF0dXMKc3lzdGVtY3RsIHN0YXR1cyBjc3llNjIyNS5zZXJ2aWNlIC0tbm8tcGFnZXIgfHwgdHJ1ZQoKIyBDaGVjayBpZiBhcHBsaWNhdGlvbiBpcyBsaXN0ZW5pbmcgb24gcG9ydCA4MDgwCmlmIHNzIC1sdG4gfCBncmVwIC1xICI6ODA4MCAiOyB0aGVuCiAgICBlY2hvICIgQXBwbGljYXRpb24gaXMgbGlzdGVuaW5nIG9uIHBvcnQgODA4MCIKZWxzZQogICAgZWNobyAiIEFwcGxpY2F0aW9uIG1heSBub3QgYmUgbGlzdGVuaW5nIG9uIHBvcnQgODA4MCIKZmkKCmVjaG8gIj09PSBVc2VyIERhdGEgQ29tcGxldGUgPT09IgpkYXRl",
+    "TagSpecifications": [
+        {
+            "ResourceType": "instance",
+            "Tags": [
+                {
+                    "Key": "ManagedBy",
+                    "Value": "AutoScaling"
+                },
+                {
+                    "Key": "Project",
+                    "Value": "csye6225"
+                },
+                {
+                    "Key": "Name",
+                    "Value": "csye6225-dev-asg-instance"
+                },
+                {
+                    "Key": "Environment",
+                    "Value": "dev"
+                }
+            ]
+        },
+        {
+            "ResourceType": "volume",
+            "Tags": [
+                {
+                    "Key": "Environment",
+                    "Value": "dev"
+                },
+                {
+                    "Key": "Project",
+                    "Value": "csye6225"
+                },
+                {
+                    "Key": "Name",
+                    "Value": "csye6225-dev-asg-volume"
+                }
+            ]
+        }
+    ],
+    "MetadataOptions": {
+        "HttpTokens": "required",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "InstanceMetadataTags": "enabled"
+    }
+}
