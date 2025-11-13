@@ -201,3 +201,36 @@ resource "aws_iam_role_policy_attachment" "secrets_manager_attachment" {
   role       = aws_iam_role.ec2_instance_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
+
+# ==============================================================================
+# IAM Policy for SNS Publishing
+# ==============================================================================
+resource "aws_iam_policy" "sns_publish_policy" {
+  name        = "${var.vpc_name}-sns-publish-policy"
+  description = "Policy to allow EC2 to publish to SNS topic"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sns:Publish"
+        ]
+        Resource = aws_sns_topic.user_verification.arn
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.vpc_name}-sns-publish-policy"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Attach SNS Policy to EC2 Role
+resource "aws_iam_role_policy_attachment" "sns_publish_attachment" {
+  role       = aws_iam_role.ec2_instance_role.name
+  policy_arn = aws_iam_policy.sns_publish_policy.arn
+}
