@@ -279,3 +279,14 @@ variable "email_from_address" {
   type        = string
   default     = "noreply@dhruvbaraiya.me"
 }
+
+variable "alarm_email" {
+  description = "Email address for CloudWatch alarms"
+  type        = string
+}
+
+variable "app_name" {
+  description = "Application name"
+  type        = string
+  default     = "csye6225"
+}
