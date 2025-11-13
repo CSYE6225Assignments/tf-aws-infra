@@ -19,16 +19,13 @@ resource "aws_launch_template" "application" {
     delete_on_termination       = true
   }
 
-  # User Data Script (same as standalone EC2)
+  # User Data Script (with Secrets Manager)
   user_data = base64encode(templatefile("${path.module}/user-data.sh", {
-    environment    = var.environment
-    db_hostname    = aws_db_instance.main.address
-    db_port        = aws_db_instance.main.port
-    db_name        = aws_db_instance.main.db_name
-    db_username    = var.db_username
-    db_password    = random_password.db_password.result
-    s3_bucket_name = aws_s3_bucket.images.bucket
-    aws_region     = var.region
+    environment     = var.environment
+    db_secret_id    = aws_secretsmanager_secret.db_password.id
+    email_secret_id = aws_secretsmanager_secret.email_credentials.id
+    s3_bucket_name  = aws_s3_bucket.images.bucket
+    aws_region      = var.region
   }))
 
   # Root Volume Configuration
@@ -79,7 +76,9 @@ resource "aws_launch_template" "application" {
     aws_iam_instance_profile.ec2_instance_profile,
     aws_security_group.application,
     aws_db_instance.main,
-    aws_s3_bucket.images
+    aws_s3_bucket.images,
+    aws_secretsmanager_secret_version.db_password,
+    aws_secretsmanager_secret_version.email_credentials
   ]
 
   tags = {

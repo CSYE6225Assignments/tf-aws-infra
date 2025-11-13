@@ -376,3 +376,28 @@ output "kms_secrets_key_arn" {
   description = "ARN of KMS key for Secrets Manager"
   value       = aws_kms_key.secrets.arn
 }
+
+# ==============================================================================
+# Secrets Manager Outputs
+# ==============================================================================
+output "db_secret_id" {
+  description = "ID of database password secret"
+  value       = aws_secretsmanager_secret.db_password.id
+  sensitive   = true
+}
+
+output "db_secret_arn" {
+  description = "ARN of database password secret"
+  value       = aws_secretsmanager_secret.db_password.arn
+}
+
+output "email_secret_id" {
+  description = "ID of email credentials secret"
+  value       = aws_secretsmanager_secret.email_credentials.id
+  sensitive   = true
+}
+
+output "email_secret_arn" {
+  description = "ARN of email credentials secret"
+  value       = aws_secretsmanager_secret.email_credentials.arn
+}

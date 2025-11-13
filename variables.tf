@@ -266,3 +266,16 @@ variable "domain_name" {
     error_message = "Must be a valid domain name."
   }
 }
+
+variable "email_api_key" {
+  description = "API key for email service (SendGrid)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "email_from_address" {
+  description = "From email address for verification emails"
+  type        = string
+  default     = "noreply@dhruvbaraiya.me"
+}

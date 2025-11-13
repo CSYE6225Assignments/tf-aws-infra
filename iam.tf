@@ -145,7 +145,8 @@ resource "aws_iam_policy" "kms_policy" {
         ]
         Resource = [
           aws_kms_key.ec2.arn,
-          aws_kms_key.s3.arn
+          aws_kms_key.s3.arn,
+          aws_kms_key.secrets.arn
         ]
       }
     ]
@@ -162,4 +163,41 @@ resource "aws_iam_policy" "kms_policy" {
 resource "aws_iam_role_policy_attachment" "kms_attachment" {
   role       = aws_iam_role.ec2_instance_role.name
   policy_arn = aws_iam_policy.kms_policy.arn
+}
+
+# ==============================================================================
+# IAM Policy for Secrets Manager Access
+# ==============================================================================
+resource "aws_iam_policy" "secrets_manager_policy" {
+  name        = "${var.vpc_name}-secrets-manager-policy"
+  description = "Policy to allow EC2 to read secrets from Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.db_password.arn,
+          aws_secretsmanager_secret.email_credentials.arn
+        ]
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.vpc_name}-secrets-manager-policy"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Attach Secrets Manager Policy to EC2 Role
+resource "aws_iam_role_policy_attachment" "secrets_manager_attachment" {
+  role       = aws_iam_role.ec2_instance_role.name
+  policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
