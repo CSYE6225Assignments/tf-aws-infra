@@ -10,9 +10,20 @@ date
 # Wait for network
 sleep 10
 
-# Install netcat for database connectivity check
+# Install required tools
+echo "=== Installing required tools ==="
 apt-get update -y
-apt-get install -y netcat-openbsd
+apt-get install -y netcat-openbsd jq
+
+# Install AWS CLI v2 (awscli package doesn't exist in Ubuntu 24.04 repos)
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+unzip -q /tmp/awscliv2.zip -d /tmp
+/tmp/aws/install
+rm -rf /tmp/aws /tmp/awscliv2.zip
+
+# Verify installations
+which aws && echo " AWS CLI installed" || echo " AWS CLI missing"
+which jq && echo " jq installed" || echo " jq missing"
 
 # Get instance ID via IMDSv2
 TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
@@ -26,7 +37,6 @@ echo "Environment: ${environment}"
 echo "=== Configuring CloudWatch Agent ==="
 
 # Replace placeholder in CloudWatch config
-# Using %%{ENVIRONMENT}%% to avoid Terraform template parsing issues
 sed -i 's/$${ENVIRONMENT}/${environment}/g' /opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json
 
 # Verify replacement worked
@@ -57,6 +67,41 @@ else
 fi
 
 # ========================================
+# Fetch Database Credentials from Secrets Manager
+# ========================================
+echo "=== Fetching Database Credentials from Secrets Manager ==="
+
+DB_SECRET=$(aws secretsmanager get-secret-value \
+    --secret-id ${db_secret_id} \
+    --region ${aws_region} \
+    --query SecretString \
+    --output text)
+
+DB_USERNAME=$(echo "$DB_SECRET" | jq -r '.username')
+DB_PASSWORD=$(echo "$DB_SECRET" | jq -r '.password')
+DB_HOST=$(echo "$DB_SECRET" | jq -r '.host')
+DB_PORT=$(echo "$DB_SECRET" | jq -r '.port')
+DB_NAME=$(echo "$DB_SECRET" | jq -r '.dbname')
+
+echo " Database credentials fetched from Secrets Manager"
+
+# ========================================
+# Fetch Email Service Credentials
+# ========================================
+echo "=== Fetching Email Service Credentials ==="
+
+EMAIL_SECRET=$(aws secretsmanager get-secret-value \
+    --secret-id ${email_secret_id} \
+    --region ${aws_region} \
+    --query SecretString \
+    --output text)
+
+EMAIL_API_KEY=$(echo "$EMAIL_SECRET" | jq -r '.api_key')
+EMAIL_FROM=$(echo "$EMAIL_SECRET" | jq -r '.from_email')
+
+echo " Email credentials fetched from Secrets Manager"
+
+# ========================================
 # Configure Application
 # ========================================
 echo "=== Creating application.properties ==="
@@ -68,10 +113,10 @@ server.port=8080
 # Application Configuration
 spring.application.name=csye6225
 
-# Database Configuration (RDS)
-spring.datasource.url=jdbc:mysql://${db_hostname}:${db_port}/${db_name}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=${db_username}
-spring.datasource.password=${db_password}
+# Database Configuration (from Secrets Manager)
+spring.datasource.url=jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=$DB_USERNAME
+spring.datasource.password=$DB_PASSWORD
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Connection Pool Settings
@@ -90,6 +135,10 @@ spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 aws.region=${aws_region}
 aws.s3.bucket-name=${s3_bucket_name}
 storage.type=s3
+
+# Email Configuration (from Secrets Manager)
+email.api.key=$EMAIL_API_KEY
+email.from=$EMAIL_FROM
 
 # File Upload Configuration
 spring.servlet.multipart.enabled=true
@@ -122,14 +171,13 @@ echo " Application properties created"
 # ========================================
 echo "=== Waiting for database ==="
 for i in {1..30}; do
-  if nc -z -w5 ${db_hostname} ${db_port} 2>/dev/null; then
+  if nc -z -w5 $DB_HOST $DB_PORT 2>/dev/null; then
     echo " Database is reachable!"
     break
   fi
   echo "Attempt $i/30: Waiting for database..."
   sleep 10
 done
-
 
 # ========================================
 # Start Application
