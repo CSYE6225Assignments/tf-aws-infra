@@ -234,3 +234,69 @@ resource "aws_iam_role_policy_attachment" "sns_publish_attachment" {
   role       = aws_iam_role.ec2_instance_role.name
   policy_arn = aws_iam_policy.sns_publish_policy.arn
 }
+
+# ==============================================================================
+# Lambda IAM Role for Email Verification
+# ==============================================================================
+resource "aws_iam_role" "lambda_email_verification" {
+  name = "${var.vpc_name}-lambda-email-verification-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+    }]
+  })
+
+  tags = {
+    Name        = "${var.vpc_name}-lambda-role"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==============================================================================
+# Attach AWS Managed Policy for Lambda Basic Execution (CloudWatch Logs)
+# ==============================================================================
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+  role       = aws_iam_role.lambda_email_verification.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# ==============================================================================
+# Lambda IAM Policy for DynamoDB Access
+# ==============================================================================
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  name        = "${var.vpc_name}-lambda-dynamodb-policy"
+  description = "Allow Lambda to access DynamoDB email tracking table"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ]
+      Resource = aws_dynamodb_table.email_tracking.arn
+    }]
+  })
+
+  tags = {
+    Name        = "${var.vpc_name}-lambda-dynamodb-policy"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Attach DynamoDB Policy to Lambda Role
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attachment" {
+  role       = aws_iam_role.lambda_email_verification.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+}

@@ -416,7 +416,7 @@ output "sns_topic_name" {
 }
 
 # ==============================================================================
-# Lambda Outputs
+# Lambda Function Outputs
 # ==============================================================================
 output "lambda_function_name" {
   description = "Name of Lambda function"
@@ -428,9 +428,9 @@ output "lambda_function_arn" {
   value       = aws_lambda_function.email_verification.arn
 }
 
-output "lambda_role_arn" {
-  description = "ARN of Lambda IAM role"
-  value       = aws_iam_role.lambda_role.arn
+output "lambda_function_invoke_arn" {
+  description = "Invoke ARN of Lambda function"
+  value       = aws_lambda_function.email_verification.invoke_arn
 }
 
 # ==============================================================================
@@ -442,6 +442,6 @@ output "dynamodb_table_name" {
 }
 
 output "dynamodb_table_arn" {
-  description = "ARN of DynamoDB table"
+  description = "ARN of DynamoDB email tracking table"
   value       = aws_dynamodb_table.email_tracking.arn
 }

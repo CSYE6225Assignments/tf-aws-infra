@@ -2,7 +2,7 @@
 # DynamoDB Table for Email Tracking (Prevent Duplicates)
 # ==============================================================================
 resource "aws_dynamodb_table" "email_tracking" {
-  name         = "${var.vpc_name}-email-tracking"
+  name         = "${var.vpc_name}-EmailTracking"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "email"
   range_key    = "token"
@@ -17,7 +17,6 @@ resource "aws_dynamodb_table" "email_tracking" {
     type = "S"
   }
 
-  # Enable TTL for automatic cleanup (7 days)
   ttl {
     attribute_name = "ttl"
     enabled        = true
@@ -27,6 +26,5 @@ resource "aws_dynamodb_table" "email_tracking" {
     Name        = "${var.vpc_name}-email-tracking"
     Environment = var.environment
     Project     = var.project_name
-    Purpose     = "Email Duplicate Prevention"
   }
 }

@@ -160,11 +160,13 @@ management.statsd.metrics.export.port=8125
 management.metrics.distribution.percentiles-histogram.all=false
 
 # Environment
-ENVIRONMENT=${environment}
+environment=${environment}
 
 # Email Verification
-EMAIL_VERIFICATION_ENABLED=true
-DOMAIN_NAME=dhruvbaraiya.me
+email.verification.enabled=true
+
+# Domain Configuration
+domain.name=dhruvbaraiya.me
 EOF
 
 # Set ownership and permissions
