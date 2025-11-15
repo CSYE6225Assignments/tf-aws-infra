@@ -82,7 +82,7 @@ resource "aws_kms_key" "secrets" {
         Sid    = "Enable IAM User Permissions"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"  # ← DYNAMIC
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" # ← DYNAMIC
         }
         Action   = "kms:*"
         Resource = "*"
