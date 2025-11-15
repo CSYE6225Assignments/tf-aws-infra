@@ -97,6 +97,29 @@ resource "aws_lb_listener" "http" {
 }
 
 # ==============================================================================
+# LOAD BALANCER LISTENER (HTTPS:443) - Only if certificate exists
+# ==============================================================================
+resource "aws_lb_listener" "https" {
+  count             = var.ssl_certificate_arn != "" || var.environment == "dev" ? 1 : 0
+  load_balancer_arn = aws_lb.application.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.environment == "dev" ? data.aws_acm_certificate.dev_certificate[0].arn : var.ssl_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.application.arn
+  }
+
+  tags = {
+    Name        = "${var.vpc_name}-https-listener"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ==============================================================================
 # TEMPORARILY REGISTER STANDALONE EC2 INSTANCE
 # ==============================================================================
 # This allows us to test the Load Balancer before ASG is created

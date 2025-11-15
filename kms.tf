@@ -1,4 +1,3 @@
-data "aws_caller_identity" "current" {}
 # ==============================================================================
 # KMS Key for EC2 EBS Volumes
 # ==============================================================================
@@ -74,33 +73,8 @@ resource "aws_kms_key" "secrets" {
   enable_key_rotation     = true
   rotation_period_in_days = 90
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Id      = "key-policy-secrets"
-    Statement = [
-      {
-        Sid    = "Enable IAM User Permissions"
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" # ← DYNAMIC
-        }
-        Action   = "kms:*"
-        Resource = "*"
-      },
-      {
-        Sid    = "Allow EC2 Role to Decrypt Secrets"
-        Effect = "Allow"
-        Principal = {
-          AWS = aws_iam_role.ec2_instance_role.arn
-        }
-        Action = [
-          "kms:Decrypt",
-          "kms:DescribeKey"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
+  # Remove the policy block entirely - use default policy
+  # Permissions will be granted via IAM policy on EC2 role instead
 
   tags = {
     Name        = "${var.vpc_name}-secrets-kms"

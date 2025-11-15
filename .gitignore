@@ -40,6 +40,18 @@ Thumbs.db
 *.swo
 *~
 
+# SSL Certificates (NEVER commit private keys!)
+ssl-certificates/
+*.key
+*.crt
+*.ca-bundle
+*.csr
+*.pem
+
+# AMI artifacts
+lambda-placeholder.zip
+manifest.json
+
 # Backup or temp files
 *.backup
 *.bak
