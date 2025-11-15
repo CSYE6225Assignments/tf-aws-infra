@@ -1,3 +1,4 @@
+data "aws_caller_identity" "current" {}
 # ==============================================================================
 # KMS Key for EC2 EBS Volumes
 # ==============================================================================
@@ -73,7 +74,6 @@ resource "aws_kms_key" "secrets" {
   enable_key_rotation     = true
   rotation_period_in_days = 90
 
-  # POLICY BLOCK:
   policy = jsonencode({
     Version = "2012-10-17"
     Id      = "key-policy-secrets"
@@ -82,7 +82,7 @@ resource "aws_kms_key" "secrets" {
         Sid    = "Enable IAM User Permissions"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::740535718147:root"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" # ← DYNAMIC
         }
         Action   = "kms:*"
         Resource = "*"
