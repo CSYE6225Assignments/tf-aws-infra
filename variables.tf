@@ -191,7 +191,7 @@ variable "asg_desired_capacity" {
 variable "asg_health_check_grace_period" {
   description = "Time (in seconds) after instance comes into service before checking health"
   type        = number
-  default     = 300
+  default     = 600
 }
 
 variable "asg_default_cooldown" {
@@ -278,4 +278,11 @@ variable "email_from_address" {
   description = "From email address for verification emails"
   type        = string
   default     = "noreply@dhruvbaraiya.me"
+}
+
+variable "sendgrid_api_key" {
+  description = "SendGrid API key for email service"
+  type        = string
+  sensitive   = true
+  default     = ""
 }

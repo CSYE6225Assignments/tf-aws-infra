@@ -414,3 +414,34 @@ output "sns_topic_name" {
   description = "Name of SNS topic"
   value       = aws_sns_topic.user_verification.name
 }
+
+# ==============================================================================
+# Lambda Function Outputs
+# ==============================================================================
+output "lambda_function_name" {
+  description = "Name of Lambda function"
+  value       = aws_lambda_function.email_verification.function_name
+}
+
+output "lambda_function_arn" {
+  description = "ARN of Lambda function"
+  value       = aws_lambda_function.email_verification.arn
+}
+
+output "lambda_function_invoke_arn" {
+  description = "Invoke ARN of Lambda function"
+  value       = aws_lambda_function.email_verification.invoke_arn
+}
+
+# ==============================================================================
+# DynamoDB Outputs
+# ==============================================================================
+output "dynamodb_table_name" {
+  description = "Name of DynamoDB email tracking table"
+  value       = aws_dynamodb_table.email_tracking.name
+}
+
+output "dynamodb_table_arn" {
+  description = "ARN of DynamoDB email tracking table"
+  value       = aws_dynamodb_table.email_tracking.arn
+}
