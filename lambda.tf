@@ -28,8 +28,7 @@ resource "aws_lambda_function" "email_verification" {
   # Ignore code changes - GitHub Actions will update the function
   lifecycle {
     ignore_changes = [
-      source_code_hash,
-      last_modified
+      source_code_hash
     ]
   }
 
