@@ -286,3 +286,15 @@ variable "sendgrid_api_key" {
   sensitive   = true
   default     = ""
 }
+
+variable "alarm_email" {
+  description = "Email address for CloudWatch alarms (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "ssl_certificate_arn" {
+  description = "ARN of SSL certificate (for DEMO - imported from Namecheap)"
+  type        = string
+  default     = ""
+}
