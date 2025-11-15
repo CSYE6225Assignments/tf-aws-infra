@@ -60,4 +60,3 @@ manifest.json
 # Terraform generated files
 *.tfstate.backup
 *.log
-output.txt

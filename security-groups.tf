@@ -58,12 +58,13 @@ resource "aws_security_group" "application" {
     cidr_blocks = [var.ssh_cidr]
   }
 
-  # REMOVED: Direct HTTP access from anywhere
-  # REMOVED: Direct HTTPS access from anywhere
-  # REMOVED: Direct app port access from anywhere
-
-  # Application port access is now defined as a separate rule below
-  # that only allows traffic from the load balancer
+  ingress {
+    description     = "Application traffic from Load Balancer only"
+    from_port       = var.app_port
+    to_port         = var.app_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.load_balancer.id]
+  }
 
   # Allow all outbound traffic
   egress {
@@ -80,25 +81,6 @@ resource "aws_security_group" "application" {
     Project     = var.project_name
     Purpose     = "Application Server"
   }
-}
-
-# ==============================================================================
-# APPLICATION SECURITY GROUP RULE - Traffic from Load Balancer ONLY
-# ==============================================================================
-resource "aws_security_group_rule" "app_from_lb" {
-  type                     = "ingress"
-  from_port                = var.app_port
-  to_port                  = var.app_port
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.application.id
-  source_security_group_id = aws_security_group.load_balancer.id
-  description              = "Application traffic from Load Balancer only"
-
-  # Ensure security groups are created first
-  depends_on = [
-    aws_security_group.application,
-    aws_security_group.load_balancer
-  ]
 }
 
 # ==============================================================================
